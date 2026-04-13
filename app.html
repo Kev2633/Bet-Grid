@@ -89,80 +89,195 @@ select,.btn{padding:8px 16px;border-radius:8px;font-size:13px;border:1px solid v
 .loading{text-align:center;padding:40px;color:var(--dim)}
 .game-time{font-size:11px;color:var(--dim)}
 @media(max-width:768px){.sidebar{width:60px}.sidebar .logo h1,.sidebar .tagline{display:none}.content{margin-left:60px;padding:16px}.dashboard-panels{grid-template-columns:1fr}.stats-grid{grid-template-columns:1fr 1fr}}
-@keyframes pulse{0%,100%{opacity:1}50%{opacity:.3}}.live-badge{background:var(--green);color:var(--bg);padding:2px 8px;border-radius:4px;font-size:10px;font-weight:700;animation:pulse 1.5s infinite}</style></head>
-<body><div id="app"><nav class="sidebar"><div class="logo"><h1>EdgeBoard</h1><span class="tagline">Find Your Edge</span></div><ul class="nav-links">
-<li class="active" data-tab="dashboard">Dashboard</li><li data-tab="live">Live Games</li>
+@keyframes pulse{0%,100%{opacity:1}50%{opacity:.3}}.live-badge{background:var(--green);color:var(--bg);padding:2px 8px;border-radius:4px;font-size:10px;font-weight:700;animation:pulse 1.5s infinite}
+.lines-card{background:var(--card);border:1px solid var(--border);border-radius:12px;padding:16px;margin-bottom:12px}
+.lines-card-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:12px}
+.lines-card-teams{display:flex;flex-direction:column;gap:6px}
+.lines-team-row{display:flex;align-items:center;gap:10px;font-size:14px}
+.lines-team-row img{width:20px;height:20px;border-radius:3px}
+.lines-team-row .team-name{font-weight:600;min-width:140px}
+.lines-odds-grid{display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;margin-top:12px}
+.lines-odds-cell{background:var(--bg);border:1px solid var(--border);border-radius:8px;padding:10px;text-align:center}
+.lines-odds-cell .cell-label{font-size:10px;color:var(--dim);text-transform:uppercase;margin-bottom:4px}
+.lines-odds-cell .cell-value{font-size:15px;font-weight:700}
+.lines-odds-cell.highlighted{border-color:var(--accent);background:rgba(0,212,170,.06)}
+.lines-odds-cell .cell-value.positive{color:var(--green)}
+.lines-odds-cell .cell-value.negative{color:var(--red)}
+.lines-status{font-size:11px;padding:3px 8px;border-radius:4px}
+.lines-status.live{background:rgba(0,212,170,.15);color:var(--green)}
+.lines-status.upcoming{background:rgba(255,195,18,.15);color:var(--yellow)}
+.lines-status.final{background:rgba(139,143,163,.15);color:var(--dim)}
+</style>
+</head>
+<body>
+<div id="app">
+<div class="sidebar">
+<div class="logo"><h1>EdgeBoard</h1><div class="tagline">Find Your Edge</div></div>
+<ul class="nav-links">
+<li data-tab="dashboard" class="active">Dashboard</li>
+<li data-tab="live">Live Games</li>
 <li data-tab="lines">Line Comparison</li>
 <li data-tab="promos">Promotions</li>
 <li data-tab="accounts">Accounts</li>
 <li data-tab="transactions">Transactions</li>
 <li data-tab="import">Import CSV</li>
-<li data-tab="settings">Settings</li><li data-tab="bets">Bet Tracker</li><li data-tab="arb">Arb Calculator</li>
-</ul></nav><main class="content">
-<div class="status-bar"><span><span class="status-dot offline" id="api-dot"></span><span id="api-status">Checking API...</span></span><span id="last-refresh"></span></div>
-<section id="tab-dashboard" class="tab-content active"><h2>Dashboard Overview</h2>
+<li data-tab="settings">Settings</li>
+<li data-tab="bets">Bet Tracker</li>
+<li data-tab="arb">Arb Calculator</li>
+</ul>
+</div>
+<div class="content">
+<div class="status-bar"><span><span class="status-dot offline" id="api-dot"></span><span id="api-status">Checking...</span></span><span id="last-refresh"></span></div>
+
+<!-- Dashboard -->
+<div id="tab-dashboard" class="tab-content active">
+<h2>Dashboard Overview</h2>
 <div class="stats-grid">
-<div class="stat-card"><span class="stat-label">Total Deposited</span><span class="stat-value" id="total-deposited">$0.00</span></div>
-<div class="stat-card"><span class="stat-label">Total Withdrawn</span><span class="stat-value" id="total-withdrawn" style="color:var(--red)">$0.00</span></div>
-<div class="stat-card"><span class="stat-label">Active Accounts</span><span class="stat-value" id="active-accounts">0</span></div>
-<div class="stat-card"><span class="stat-label">Net Bankroll</span><span class="stat-value" id="net-bankroll">$0.00</span></div>
-<div class="stat-card"><span class="stat-label">Games Today</span><span class="stat-value" id="games-today">0</span></div>
-<div class="stat-card"><span class="stat-label">Active Promos</span><span class="stat-value" id="active-promos">0</span></div>
+<div class="stat-card"><div class="stat-label">Total Deposited</div><div class="stat-value" id="total-deposited">$0.00</div></div>
+<div class="stat-card"><div class="stat-label">Total Withdrawn</div><div class="stat-value" id="total-withdrawn">$0.00</div></div>
+<div class="stat-card"><div class="stat-label">Active Accounts</div><div class="stat-value" id="active-accounts">0</div></div>
+<div class="stat-card"><div class="stat-label">Net Bankroll</div><div class="stat-value" id="net-bankroll">$0.00</div></div>
+<div class="stat-card"><div class="stat-label">Games Today</div><div class="stat-value" id="games-today">0</div></div>
+<div class="stat-card"><div class="stat-label">Active Promos</div><div class="stat-value" id="active-promos">0</div></div>
 </div>
-<div class="dashboard-panels"><div class="panel"><h3>Deposits by Sportsbook</h3><div id="deposits-chart" class="chart-container"></div></div>
-<div class="panel"><h3>Recent Transactions</h3><table id="recent-transactions"><thead><tr><th>Date</th><th>Book</th><th>Type</th><th>Amount</th></tr></thead><tbody></tbody></table></div></div></section>
-<section id="tab-lines" class="tab-content"><h2>Line Comparison</h2>
+<div class="dashboard-panels">
+<div class="panel"><h3>Deposits by Sportsbook</h3><div class="chart-container" id="deposits-chart"></div></div>
+<div class="panel"><h3>Recent Transactions</h3><table id="recent-transactions"><thead><tr><th>Date</th><th>Book</th><th>Type</th><th>Amount</th></tr></thead><tbody></tbody></table></div>
+</div>
+</div>
+
+<!-- Line Comparison -->
+<div id="tab-lines" class="tab-content">
+<h2>Line Comparison</h2>
 <div class="filters">
-<select id="sport-filter"><option value="all">All Sports</option><option value="icehockey_nhl">NHL</option><option value="baseball_mlb">MLB</option><option value="basketball_nba">NBA</option><option value="americanfootball_nfl">NFL</option></select>
-<select id="market-filter"><option value="all">All Markets</option><option value="h2h">Moneyline</option><option value="spreads">Spread</option><option value="totals">Totals</option></select>
-<button id="refresh-odds" class="btn">Refresh Odds</button><select id="game-filter"><option value="all">All Games</option></select><select id="time-filter"><option value="all">Today & Tomorrow</option><option value="today">Today Only</option><option value="tomorrow">Tomorrow Only</option></select><input type="text" id="search-filter" placeholder="Search team..." style="padding:8px 16px;border-radius:8px;font-size:13px;border:1px solid var(--border);background:var(--card);color:var(--text);width:180px">
+<select id="sport-filter"><option value="all">All Sports</option><option value="nhl">NHL</option><option value="mlb">MLB</option><option value="nba">NBA</option><option value="nfl">NFL</option></select>
+<select id="line-status-filter"><option value="all">All Games</option><option value="upcoming">Upcoming</option><option value="live">In Progress</option><option value="final">Final</option></select>
+<button class="btn" id="refresh-lines">Refresh Lines</button>
+<input type="text" id="search-filter" placeholder="Search team..." style="padding:8px 16px;border-radius:8px;font-size:13px;border:1px solid var(--border);background:var(--card);color:var(--text);width:180px">
 </div>
-<div id="lines-loading" class="loading hidden">Loading live odds...</div>
-<table id="lines-table" class="data-table"><thead><tr><th>Sport</th><th>Event</th><th>Market</th><th>FanDuel</th><th>DraftKings</th><th>BetMGM</th><th>Caesars</th><th>Best</th></tr></thead><tbody></tbody></table>
-<p id="no-odds-msg" class="hidden" style="color:var(--dim);text-align:center;padding:40px">No odds available. Add your API key in Settings and click Refresh Odds.</p>
-</section>
-<section id="tab-promos" class="tab-content"><h2>Promotions Tracker</h2>
-<div class="filters"><select id="promo-sport-filter"><option value="all">All Sports</option><option value="nba">NBA</option><option value="nfl">NFL</option><option value="mlb">MLB</option><option value="nhl">NHL</option></select>
-<select id="promo-book-filter"><option value="all">All Books</option><option value="fanduel">FanDuel</option><option value="draftkings">DraftKings</option><option value="betmgm">BetMGM</option><option value="caesars">Caesars</option></select></div>
-<div id="promos-grid" class="promos-grid"></div></section>
-<section id="tab-accounts" class="tab-content"><h2>Sportsbook Accounts</h2>
-<button id="add-account-btn" class="btn">+ Add Account</button>
-<div id="accounts-grid" class="accounts-grid"></div>
-<div id="add-account-modal" class="modal hidden"><div class="modal-content"><h3>Add Sportsbook Account</h3>
-<form id="add-account-form"><label>Sportsbook<select name="sportsbook" required><option value="">Select...</option><option value="fanduel">FanDuel</option><option value="draftkings">DraftKings</option><option value="betmgm">BetMGM</option><option value="caesars">Caesars</option><option value="espnbet">ESPN BET</option><option value="betrivers">BetRivers</option><option value="hard_rock">Hard Rock Bet</option><option value="fanatics">Fanatics</option></select></label>
+<div id="lines-loading" class="loading hidden">Fetching lines from ESPN...</div>
+<div id="lines-container"></div>
+<div id="no-lines-msg" class="hidden" style="text-align:center;padding:40px;color:var(--dim)">No games found. Click Refresh Lines to load today's games.</div>
+</div>
+
+<!-- Promotions -->
+<div id="tab-promos" class="tab-content">
+<h2>Promotions Tracker</h2>
+<div class="filters">
+<select id="promo-sport-filter"><option value="all">All Sports</option><option value="nba">NBA</option><option value="nfl">NFL</option><option value="mlb">MLB</option><option value="nhl">NHL</option></select>
+<select id="promo-book-filter"><option value="all">All Books</option><option value="fanduel">FanDuel</option><option value="draftkings">DraftKings</option><option value="betmgm">BetMGM</option><option value="caesars">Caesars</option></select>
+</div>
+<div class="promos-grid" id="promos-grid"></div>
+</div>
+
+<!-- Accounts -->
+<div id="tab-accounts" class="tab-content">
+<h2>Sportsbook Accounts</h2>
+<button class="btn" id="add-account-btn">+ Add Account</button>
+<div class="accounts-grid" id="accounts-grid"></div>
+<div class="modal hidden" id="add-account-modal"><div class="modal-content"><h3>Add Sportsbook Account</h3><form id="add-account-form">
+<label>Sportsbook<select name="sportsbook" required><option value="">Select...</option><option value="fanduel">FanDuel</option><option value="draftkings">DraftKings</option><option value="betmgm">BetMGM</option><option value="caesars">Caesars</option><option value="espnbet">ESPN BET</option><option value="betrivers">BetRivers</option><option value="hard_rock">Hard Rock Bet</option><option value="fanatics">Fanatics</option></select></label>
 <label>Nickname<input type="text" name="nickname" placeholder="e.g. My FanDuel"></label>
 <label>Initial Deposit<input type="number" name="initial_deposit" step="0.01" min="0" placeholder="0.00"></label>
-<div class="modal-actions"><button type="submit" class="btn">Save</button><button type="button" class="btn btn-secondary" id="cancel-add-account">Cancel</button></div></form></div></div></section>
-<section id="tab-transactions" class="tab-content"><h2>Transactions</h2>
-<div class="txn-form"><label>Date<input type="date" id="txn-date"></label>
+<div class="modal-actions"><button type="submit" class="btn">Save</button><button type="button" class="btn btn-secondary" id="cancel-add-account">Cancel</button></div>
+</form></div></div>
+</div>
+
+<!-- Transactions -->
+<div id="tab-transactions" class="tab-content">
+<h2>Transactions</h2>
+<div class="txn-form">
+<label>Date<input type="date" id="txn-date"></label>
 <label>Sportsbook<select id="txn-book"><option value="fanduel">FanDuel</option><option value="draftkings">DraftKings</option><option value="betmgm">BetMGM</option><option value="caesars">Caesars</option><option value="espnbet">ESPN BET</option><option value="betrivers">BetRivers</option><option value="hard_rock">Hard Rock</option><option value="fanatics">Fanatics</option></select></label>
 <label>Type<select id="txn-type"><option value="deposit">Deposit</option><option value="withdrawal">Withdrawal</option><option value="bonus">Bonus</option></select></label>
 <label>Amount<input type="number" id="txn-amount" step="0.01" min="0" placeholder="0.00"></label>
-<div><button id="add-txn-btn" class="btn">Add Transaction</button></div></div>
-<table id="all-transactions" class="data-table"><thead><tr><th>Date</th><th>Book</th><th>Type</th><th>Amount</th><th>Action</th></tr></thead><tbody></tbody></table></section>
-<section id="tab-import" class="tab-content"><h2>Import Transactions</h2>
-<div class="import-zone"><p>Upload a CSV file with your deposit and withdrawal history.</p>
+<button class="btn" id="add-txn-btn">Add Transaction</button>
+</div>
+<table><thead><tr><th>Date</th><th>Book</th><th>Type</th><th>Amount</th><th>Action</th></tr></thead><tbody id="all-transactions"></tbody></table>
+</div>
+
+<!-- Import CSV -->
+<div id="tab-import" class="tab-content">
+<h2>Import Transactions</h2>
+<div class="import-zone">
+<p>Upload a CSV file with your deposit and withdrawal history.</p>
 <p class="hint">Expected columns: date, sportsbook, type (deposit/withdrawal/bonus), amount</p>
 <input type="file" id="csv-file" accept=".csv">
-<button id="parse-csv" class="btn">Parse & Preview</button></div>
-<div id="csv-preview" class="hidden"><h3>Preview</h3><table id="csv-preview-table" class="data-table"><thead></thead><tbody></tbody></table>
-<button id="confirm-import" class="btn" style="margin-top:16px">Confirm Import</button></div></section>
-<section id="tab-settings" class="tab-content"><h2>Settings</h2>
+<button class="btn" id="parse-csv" style="margin-top:12px">Parse & Preview</button>
+</div>
+<div id="csv-preview" class="hidden" style="margin-top:20px">
+<h3>Preview</h3>
+<table id="csv-preview-table"><thead></thead><tbody></tbody></table>
+<button class="btn" id="confirm-import" style="margin-top:12px">Confirm Import</button>
+</div>
+</div>
+
+<!-- Settings -->
+<div id="tab-settings" class="tab-content">
+<h2>Settings</h2>
 <div class="settings-form">
-<label>The Odds API Key<input type="text" id="api-key-input" placeholder="Paste your API key from the-odds-api.com">
-<p style="font-size:11px;color:var(--dim);margin-top:6px">Free at <a href="https://the-odds-api.com" target="_blank" style="color:var(--accent)">the-odds-api.com</a> - 500 requests/month. Covers NHL, MLB, NBA, NFL odds from FanDuel, DraftKings, BetMGM, Caesars.</p></label>
-<button id="save-api-key" class="btn">Save API Key</button>
-<button id="test-api-key" class="btn btn-secondary" style="margin-left:8px">Test Connection</button>
+<label>The Odds API Key<input type="text" id="api-key-input" placeholder="Paste your API key from the-odds-api.com"></label>
+<p style="font-size:12px;color:var(--dim);margin-bottom:16px">Optional - for multi-book odds. Free at <a href="https://the-odds-api.com" target="_blank" style="color:var(--accent)">the-odds-api.com</a>. Line Comparison works without it using ESPN data.</p>
+<button class="btn" id="save-api-key">Save API Key</button>
+<button class="btn btn-secondary" id="test-api-key" style="margin-left:8px">Test Connection</button>
 <p id="api-test-result" style="margin-top:12px;font-size:13px"></p>
-</div></section>
-<section id="tab-live" class="tab-content"><h2>Live Games <button class="btn btn-sm" id="refresh-live" style="margin-left:12px">Refresh</button> <span id="live-auto" style="font-size:12px;color:var(--dim);margin-left:8px">Auto-refresh: 30s</span></h2><div class="filters"><select id="live-sport-filter"><option value="all">All Sports</option><option value="nhl">NHL</option><option value="nba">NBA</option><option value="mlb">MLB</option><option value="nfl">NFL</option></select></div><div id="live-loading" class="loading hidden">Fetching live scores from ESPN...</div><div id="live-games" class="promos-grid"></div><p id="no-live" class="hidden" style="color:var(--dim);text-align:center;padding:40px">No games scheduled right now.</p></section><section id="tab-bets" class="tab-content"><h2>Bet Tracker</h2><div class="txn-form"><label>Date<input type="date" id="bet-date"></label><label>Sport<select id="bet-sport"><option value="nba">NBA</option><option value="nfl">NFL</option><option value="mlb">MLB</option><option value="nhl">NHL</option></select></label><label>Event<input type="text" id="bet-event" placeholder="Team A vs Team B"></label><label>Book<select id="bet-book"><option value="fanduel">FanDuel</option><option value="draftkings">DraftKings</option><option value="betmgm">BetMGM</option><option value="caesars">Caesars</option></select></label><label>Bet Type<select id="bet-type"><option value="moneyline">Moneyline</option><option value="spread">Spread</option><option value="total">Total</option><option value="prop">Prop</option><option value="parlay">Parlay</option></select></label><label>Pick<input type="text" id="bet-pick" placeholder="e.g. Lakers -3.5"></label><label>Odds<input type="text" id="bet-odds" placeholder="e.g. -110"></label><label>Stake<input type="number" id="bet-stake" step="0.01" min="0" placeholder="0.00"></label><label>Result<select id="bet-result"><option value="pending">Pending</option><option value="win">Win</option><option value="loss">Loss</option><option value="push">Push</option></select></label><div><button class="btn" id="add-bet-btn">Add Bet</button></div></div><div class="stats-grid"><div class="stat-card"><span class="stat-label">Total Bets</span><span class="stat-value" id="total-bets">0</span></div><div class="stat-card"><span class="stat-label">Win Rate</span><span class="stat-value" id="win-rate">0%</span></div><div class="stat-card"><span class="stat-label">Total Staked</span><span class="stat-value" id="total-staked">$0</span></div><div class="stat-card"><span class="stat-label">Net P/L</span><span class="stat-value" id="net-pl">$0</span></div></div><table class="data-table" id="bets-table"><thead><tr><th>Date</th><th>Sport</th><th>Event</th><th>Book</th><th>Pick</th><th>Odds</th><th>Stake</th><th>Result</th><th>P/L</th><th></th></tr></thead><tbody></tbody></table></section><section id="tab-arb" class="tab-content"><h2>Arb Calculator</h2><div class="panel" style="max-width:600px"><h3>Two-Way Arbitrage</h3><div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;margin:20px 0"><label style="font-size:13px;color:var(--dim)">Outcome 1 Odds<input type="text" id="arb-odds1" placeholder="+150" style="display:block;width:100%;margin-top:6px;padding:10px;border-radius:8px;border:1px solid var(--border);background:var(--bg);color:var(--text);font-size:14px"></label><label style="font-size:13px;color:var(--dim)">Outcome 2 Odds<input type="text" id="arb-odds2" placeholder="-130" style="display:block;width:100%;margin-top:6px;padding:10px;border-radius:8px;border:1px solid var(--border);background:var(--bg);color:var(--text);font-size:14px"></label></div><label style="font-size:13px;color:var(--dim)">Total Stake ($)<input type="number" id="arb-total" value="100" step="0.01" style="display:block;width:200px;margin-top:6px;padding:10px;border-radius:8px;border:1px solid var(--border);background:var(--bg);color:var(--text);font-size:14px"></label><button class="btn" id="calc-arb" style="margin-top:16px">Calculate</button><div id="arb-result" style="margin-top:20px"></div></div></section></main></div>
+</div>
+</div>
+
+<!-- Live Games -->
+<div id="tab-live" class="tab-content">
+<h2>Live Games <button class="btn btn-sm" id="refresh-live">Refresh</button> <span style="font-size:12px;color:var(--dim)">Auto-refresh: 30s</span></h2>
+<div class="filters"><select id="live-sport-filter"><option value="all">All Sports</option><option value="nhl">NHL</option><option value="nba">NBA</option><option value="mlb">MLB</option><option value="nfl">NFL</option></select></div>
+<div id="live-loading" class="loading">Fetching live scores from ESPN...</div>
+<div id="live-games" style="display:grid;grid-template-columns:repeat(auto-fill,minmax(320px,1fr));gap:16px"></div>
+<div id="no-live" class="hidden" style="text-align:center;padding:40px;color:var(--dim)">No games scheduled right now.</div>
+</div>
+
+<!-- Bet Tracker -->
+<div id="tab-bets" class="tab-content">
+<h2>Bet Tracker</h2>
+<div class="txn-form">
+<label>Date<input type="date" id="bet-date"></label>
+<label>Sport<select id="bet-sport"><option value="nba">NBA</option><option value="nfl">NFL</option><option value="mlb">MLB</option><option value="nhl">NHL</option></select></label>
+<label>Event<input type="text" id="bet-event" placeholder="Team A vs Team B"></label>
+<label>Book<select id="bet-book"><option value="fanduel">FanDuel</option><option value="draftkings">DraftKings</option><option value="betmgm">BetMGM</option><option value="caesars">Caesars</option></select></label>
+<label>Bet Type<select id="bet-type"><option value="moneyline">Moneyline</option><option value="spread">Spread</option><option value="total">Total</option><option value="prop">Prop</option><option value="parlay">Parlay</option></select></label>
+<label>Pick<input type="text" id="bet-pick" placeholder="e.g. Lakers -3.5"></label>
+<label>Odds<input type="text" id="bet-odds" placeholder="e.g. -110"></label>
+<label>Stake<input type="number" id="bet-stake" step="0.01" min="0" placeholder="0.00"></label>
+<label>Result<select id="bet-result"><option value="pending">Pending</option><option value="win">Win</option><option value="loss">Loss</option><option value="push">Push</option></select></label>
+<button class="btn" id="add-bet-btn">Add Bet</button>
+</div>
+<div class="stats-grid">
+<div class="stat-card"><div class="stat-label">Total Bets</div><div class="stat-value" id="total-bets">0</div></div>
+<div class="stat-card"><div class="stat-label">Win Rate</div><div class="stat-value" id="win-rate">0%</div></div>
+<div class="stat-card"><div class="stat-label">Total Staked</div><div class="stat-value" id="total-staked">$0</div></div>
+<div class="stat-card"><div class="stat-label">Net P/L</div><div class="stat-value" id="net-pl">$0</div></div>
+</div>
+<table id="bets-table"><thead><tr><th>Date</th><th>Sport</th><th>Event</th><th>Book</th><th>Pick</th><th>Odds</th><th>Stake</th><th>Result</th><th>P/L</th><th></th></tr></thead><tbody></tbody></table>
+</div>
+
+<!-- Arb Calculator -->
+<div id="tab-arb" class="tab-content">
+<h2>Arb Calculator</h2>
+<div class="panel" style="max-width:500px">
+<h3>Two-Way Arbitrage</h3>
+<label style="display:block;margin-bottom:12px;font-size:13px;color:var(--dim)">Outcome 1 Odds<input type="text" id="arb-odds1" placeholder="+150" style="display:block;width:100%;margin-top:6px;padding:10px;border-radius:8px;border:1px solid var(--border);background:var(--bg);color:var(--text);font-size:14px"></label>
+<label style="display:block;margin-bottom:12px;font-size:13px;color:var(--dim)">Outcome 2 Odds<input type="text" id="arb-odds2" placeholder="-130" style="display:block;width:100%;margin-top:6px;padding:10px;border-radius:8px;border:1px solid var(--border);background:var(--bg);color:var(--text);font-size:14px"></label>
+<label style="display:block;margin-bottom:12px;font-size:13px;color:var(--dim)">Total Stake ($)<input type="number" id="arb-total" value="100" step="0.01" style="display:block;width:200px;margin-top:6px;padding:10px;border-radius:8px;border:1px solid var(--border);background:var(--bg);color:var(--text);font-size:14px"></label>
+<button class="btn" id="calc-arb">Calculate</button>
+<div id="arb-result" style="margin-top:16px"></div>
+</div>
+</div>
+
+</div><!-- end content -->
+</div><!-- end app -->
+
 <script>
 const BN={fanduel:'FanDuel',draftkings:'DraftKings',betmgm:'BetMGM',caesars:'Caesars',espnbet:'ESPN BET',betrivers:'BetRivers',hard_rock:'Hard Rock Bet',fanatics:'Fanatics'};
 const COLORS=['#00d4aa','#1493ff','#c4a24e','#d4a574','#ff6b81','#a29bfe','#fd79a8','#00cec9'];
-const SPORTS=[{key:'icehockey_nhl',name:'NHL'},{key:'basketball_nba',name:'NBA'},{key:'baseball_mlb',name:'MLB'},{key:'americanfootball_nfl',name:'NFL'}];
-const BOOKS=['fanduel','draftkings','betmgm','williamhill_us'];
-const BOOK_MAP={fanduel:'FanDuel',draftkings:'DraftKings',betmgm:'BetMGM',williamhill_us:'Caesars'};
-const BOOK_KEY_MAP={fanduel:'fanduel',draftkings:'draftkings',betmgm:'betmgm',williamhill_us:'caesars'};
+const ESPN_SPORTS=[{key:'nhl',path:'hockey/nhl',name:'NHL'},{key:'nba',path:'basketball/nba',name:'NBA'},{key:'mlb',path:'baseball/mlb',name:'MLB'},{key:'nfl',path:'football/nfl',name:'NFL'}];
+
 let state=JSON.parse(localStorage.getItem('edgeboard')||'null')||{
   accounts:[],transactions:[],
   promotions:[
@@ -178,61 +293,138 @@ let state=JSON.parse(localStorage.getItem('edgeboard')||'null')||{
 let apiKey=localStorage.getItem('odds_api_key')||'';
 function save(){localStorage.setItem('edgeboard',JSON.stringify(state));}
 function saveKey(){localStorage.setItem('odds_api_key',apiKey);}
-async function fetchAllOdds(){
-  if(!apiKey){document.getElementById('api-status').textContent='No API Key - Go to Settings';return;}
+
+// LINE COMPARISON - Fetch from ESPN (no API key needed)
+let linesData=[];
+async function fetchLines(){
   document.getElementById('lines-loading').classList.remove('hidden');
-  document.getElementById('api-status').textContent='Fetching odds...';
-  let allOdds=[];
-  for(const sport of SPORTS){
+  document.getElementById('no-lines-msg').classList.add('hidden');
+  document.getElementById('lines-container').innerHTML='';
+  linesData=[];
+  for(const s of ESPN_SPORTS){
     try{
-      const url='https://api.the-odds-api.com/v4/sports/'+sport.key+'/odds?regions=us&markets=h2h,spreads,totals&oddsFormat=american&bookmakers='+BOOKS.join(',')+'&apiKey='+apiKey;
-      const r=await fetch(url);
+      const r=await fetch('https://site.api.espn.com/apis/site/v2/sports/'+s.path+'/scoreboard');
       if(!r.ok)continue;
-      const data=await r.json();
-      const remaining=r.headers.get('x-requests-remaining');
-      if(remaining)document.getElementById('last-refresh').textContent='API calls left: '+remaining;
-      data.forEach(game=>{
-        const homeTeam=game.home_team;
-        const awayTeam=game.away_team;
-        const eventName=awayTeam+' @ '+homeTeam;
-        const startTime=new Date(game.commence_time);
-        const today=new Date();
-        const isToday=startTime.toDateString()===today.toDateString();
-        const tomorrow=new Date(today);tomorrow.setDate(today.getDate()+1);
-        const isTomorrow=startTime.toDateString()===tomorrow.toDateString();
-        if(!isToday&&!isTomorrow)return;
-        game.bookmakers.forEach(bm=>{
-          bm.markets.forEach(market=>{
-            const row={sport:sport.key,sportName:sport.name,event:eventName,market:market.key,time:startTime,isToday:isToday};
-            market.outcomes.forEach(o=>{
-              const bookKey=BOOK_KEY_MAP[bm.key]||bm.key;
-              const label=o.name===homeTeam?'home':'away';
-              if(market.key==='h2h'){
-                if(!row[bookKey])row[bookKey]={};
-                row[bookKey][label]=(o.price>0?'+':'')+o.price;
-              }else if(market.key==='spreads'){
-                if(!row[bookKey])row[bookKey]={};
-                row[bookKey][label]=(o.point>0?'+':'')+o.point+' '+(o.price>0?'+':'')+o.price;
-              }else if(market.key==='totals'){
-                if(!row[bookKey])row[bookKey]={};
-                row[bookKey][o.name]=o.name+o.point+' '+(o.price>0?'+':'')+o.price;
+      const d=await r.json();
+      (d.events||[]).forEach(ev=>{
+        const comp=ev.competitions&&ev.competitions[0];
+        if(!comp)return;
+        const away=comp.competitors.find(c=>c.homeAway==='away');
+        const home=comp.competitors.find(c=>c.homeAway==='home');
+        const st=comp.status||{};
+        const tp=st.type||{};
+        const odds=comp.odds||[];
+        const primaryOdds=odds[0]||null;
+        let awayML='',homeML='',spread='',overUnder='';
+        if(primaryOdds){
+          overUnder=primaryOdds.overUnder||'';
+          spread=primaryOdds.spread||'';
+          const det=primaryOdds.details||'';
+          if(primaryOdds.awayTeamOdds){
+            awayML=primaryOdds.awayTeamOdds.moneyLine||'';
+            homeML=primaryOdds.homeTeamOdds?primaryOdds.homeTeamOdds.moneyLine:'';
+          } else if(det){
+            const parts=det.split(' ');
+            if(parts.length>=2){
+              const fav=parts[0];
+              const spreadVal=parseFloat(parts[1]);
+              if(away&&away.team&&(fav===away.team.abbreviation)){
+                spread=spreadVal;
+              } else {
+                spread=spreadVal;
               }
-            });
-            allOdds.push(row);
-          });
+            }
+          }
+          if(primaryOdds.homeTeamOdds&&primaryOdds.homeTeamOdds.moneyLine){
+            homeML=primaryOdds.homeTeamOdds.moneyLine;
+          }
+          if(primaryOdds.awayTeamOdds&&primaryOdds.awayTeamOdds.moneyLine){
+            awayML=primaryOdds.awayTeamOdds.moneyLine;
+          }
+        }
+        linesData.push({
+          sport:s.key,sportName:s.name,
+          id:ev.id,name:ev.shortName||ev.name,date:ev.date,
+          awayName:away?away.team.displayName:'TBD',awayAbbr:away?away.team.abbreviation:'',awayLogo:away?away.team.logo:'',
+          awayScore:away?away.score:'0',awayRecord:away&&away.records?away.records[0].summary:'',
+          homeName:home?home.team.displayName:'TBD',homeAbbr:home?home.team.abbreviation:'',homeLogo:home?home.team.logo:'',
+          homeScore:home?home.score:'0',homeRecord:home&&home.records?home.records[0].summary:'',
+          statusName:tp.name||'',statusDesc:tp.shortDetail||tp.description||'',
+          completed:tp.completed||false,inProgress:tp.name==='STATUS_IN_PROGRESS',
+          clock:st.displayClock||'',period:st.period||0,
+          awayML:awayML,homeML:homeML,
+          spread:spread,spreadDetails:primaryOdds?primaryOdds.details:'',
+          overUnder:overUnder,
+          provider:primaryOdds&&primaryOdds.provider?primaryOdds.provider.name:'ESPN BET'
         });
       });
-    }catch(e){console.error('Error fetching '+sport.name,e);}
+    }catch(e){console.error('ESPN lines '+s.name,e);}
   }
-  state.odds=allOdds;
-  state.oddsLastFetched=new Date().toISOString();
-  save();
   document.getElementById('lines-loading').classList.add('hidden');
   document.getElementById('api-dot').className='status-dot online';
-  document.getElementById('api-status').textContent='Live Odds Connected';
-  document.getElementById('last-refresh').textContent+=' | Updated '+new Date().toLocaleTimeString();
-  renderAll();
+  document.getElementById('api-status').textContent='ESPN Live Data';
+  document.getElementById('last-refresh').textContent='Updated '+new Date().toLocaleTimeString();
+  renderLines();
 }
+
+function renderLines(){
+  const sf=document.getElementById('sport-filter').value;
+  const stf=document.getElementById('line-status-filter').value;
+  const search=document.getElementById('search-filter').value.toLowerCase();
+  const container=document.getElementById('lines-container');
+  container.innerHTML='';
+  let games=linesData;
+  if(sf!=='all')games=games.filter(g=>g.sport===sf);
+  if(stf==='upcoming')games=games.filter(g=>!g.inProgress&&!g.completed);
+  if(stf==='live')games=games.filter(g=>g.inProgress);
+  if(stf==='final')games=games.filter(g=>g.completed);
+  if(search)games=games.filter(g=>(g.awayName+' '+g.homeName+' '+g.awayAbbr+' '+g.homeAbbr).toLowerCase().includes(search));
+  games.sort((a,b)=>{const ao=a.inProgress?0:a.completed?2:1;const bo=b.inProgress?0:b.completed?2:1;return ao-bo||new Date(a.date)-new Date(b.date);});
+  if(!games.length){document.getElementById('no-lines-msg').classList.remove('hidden');return;}
+  document.getElementById('no-lines-msg').classList.add('hidden');
+  document.getElementById('games-today').textContent=games.filter(g=>!g.completed).length;
+  games.forEach(g=>{
+    const card=document.createElement('div');card.className='lines-card';
+    let statusClass=g.inProgress?'live':g.completed?'final':'upcoming';
+    let statusText=g.inProgress?(g.clock&&g.clock!=='0:00'?g.clock:'LIVE'):g.completed?'Final':new Date(g.date).toLocaleTimeString([],{hour:'numeric',minute:'2-digit'});
+    if(g.inProgress&&g.period){
+      const pLabels={nhl:['','1st','2nd','3rd','OT'],nba:['','1st','2nd','3rd','4th','OT'],nfl:['','1st','2nd','3rd','4th','OT'],mlb:[]};
+      const pl=pLabels[g.sport];
+      if(pl&&pl[g.period])statusText=g.clock+' '+pl[g.period];
+      else if(g.sport==='mlb')statusText=g.statusDesc||('Inn '+g.period);
+    }
+    let scoreHtml='';
+    if(g.inProgress||g.completed)scoreHtml='<span style="font-size:18px;font-weight:700;margin-left:auto">'+(g.awayScore||0)+'</span>';
+    let scoreHtml2='';
+    if(g.inProgress||g.completed)scoreHtml2='<span style="font-size:18px;font-weight:700;margin-left:auto">'+(g.homeScore||0)+'</span>';
+    const fmtML=v=>{if(!v&&v!==0)return'-';v=Number(v);return v>0?'+'+v:''+v;};
+    const spreadD=g.spreadDetails||'-';
+    const ouVal=g.overUnder?(g.overUnder):"-";
+    const awayMLf=fmtML(g.awayML);
+    const homeMLf=fmtML(g.homeML);
+    card.innerHTML=
+      '<div class="lines-card-header">'+
+      '<span class="sport-badge '+g.sport+'">'+g.sportName+'</span>'+
+      '<span class="lines-status '+statusClass+'">'+statusText+'</span>'+
+      '</div>'+
+      '<div class="lines-card-teams">'+
+      '<div class="lines-team-row">'+(g.awayLogo?'<img src="'+g.awayLogo+'" alt="">':'')+'<span class="team-name">'+g.awayAbbr+'</span><span style="font-size:11px;color:var(--dim)">'+g.awayRecord+'</span>'+scoreHtml+'</div>'+
+      '<div class="lines-team-row">'+(g.homeLogo?'<img src="'+g.homeLogo+'" alt="">':'')+'<span class="team-name">'+g.homeAbbr+'</span><span style="font-size:11px;color:var(--dim)">'+g.homeRecord+'</span>'+scoreHtml2+'</div>'+
+      '</div>'+
+      '<div class="lines-odds-grid">'+
+      '<div class="lines-odds-cell"><div class="cell-label">Spread</div><div class="cell-value">'+spreadD+'</div></div>'+
+      '<div class="lines-odds-cell"><div class="cell-label">Moneyline</div><div class="cell-value '+(g.awayML>0?'positive':'negative')+'">'+awayMLf+'</div><div class="cell-value '+(g.homeML>0?'positive':'negative')+'" style="margin-top:2px;border-top:1px solid var(--border);padding-top:4px">'+homeMLf+'</div></div>'+
+      '<div class="lines-odds-cell"><div class="cell-label">O/U</div><div class="cell-value">'+ouVal+'</div></div>'+
+      '</div>'+
+      '<div style="margin-top:8px;font-size:10px;color:var(--dim);text-align:right">via '+g.provider+'</div>';
+    container.appendChild(card);
+  });
+}
+document.getElementById('sport-filter').addEventListener('change',renderLines);
+document.getElementById('line-status-filter').addEventListener('change',renderLines);
+document.getElementById('search-filter').addEventListener('input',renderLines);
+document.getElementById('refresh-lines').addEventListener('click',fetchLines);
+
 // Tab navigation
 document.querySelectorAll('.nav-links li').forEach(li=>{
   li.addEventListener('click',()=>{
@@ -242,57 +434,67 @@ document.querySelectorAll('.nav-links li').forEach(li=>{
     document.getElementById('tab-'+li.dataset.tab).classList.add('active');
   });
 });
-// Render Lines from API data
-function renderLines(){
-  const sp=document.getElementById('sport-filter').value;
-  const mk=document.getElementById('market-filter').value;
-  const tb=document.querySelector('#lines-table tbody');tb.innerHTML='';
-  const odds=state.odds||[];
-  // Deduplicate: group by event+market, merge bookmaker data
-  const grouped={};
-  odds.forEach(row=>{
-    const key=row.event+'|'+row.market;
-    if(!grouped[key])grouped[key]={sport:row.sportName,sportKey:row.sport,event:row.event,market:row.market,time:row.time,isToday:row.isToday,fanduel:null,draftkings:null,betmgm:null,caesars:null};
-    ['fanduel','draftkings','betmgm','caesars'].forEach(bk=>{
-      if(row[bk])grouped[key][bk]=row[bk];
-    });
-  });
-  let rows=Object.values(grouped);
-  if(sp!=='all')rows=rows.filter(r=>r.sportKey===sp);
-  if(mk!=='all')rows=rows.filter(r=>r.market===mk);const gf=document.getElementById('game-filter').value;const tf=document.getElementById('time-filter').value;const sf=document.getElementById('search-filter').value.toLowerCase();if(gf!=='all')rows=rows.filter(r=>r.event===gf);if(tf==='today')rows=rows.filter(r=>r.isToday);if(tf==='tomorrow')rows=rows.filter(r=>!r.isToday);if(sf)rows=rows.filter(r=>r.event.toLowerCase().includes(sf));const gameSelect=document.getElementById('game-filter');const curG=gameSelect.value;const allEv=[...new Set(Object.values(grouped).filter(r=>(sp==='all'||r.sportKey===sp)).map(r=>r.event))];gameSelect.innerHTML='<option value="all">All Games ('+allEv.length+')</option>';allEv.sort().forEach(e=>{const o=document.createElement('option');o.value=e;o.textContent=e;if(e===curG)o.selected=true;gameSelect.appendChild(o);});
-  rows.sort((a,b)=>(a.sport+a.event).localeCompare(b.sport+b.event));
-  if(!rows.length){
-    document.getElementById('no-odds-msg').classList.remove('hidden');
-    return;
+
+// Live Games
+let liveData=[];
+async function fetchESPN(){
+  document.getElementById('live-loading').classList.remove('hidden');
+  document.getElementById('no-live').classList.add('hidden');
+  liveData=[];
+  for(const s of ESPN_SPORTS){
+    try{
+      const r=await fetch('https://site.api.espn.com/apis/site/v2/sports/'+s.path+'/scoreboard');
+      if(!r.ok)continue;
+      const d=await r.json();
+      (d.events||[]).forEach(ev=>{
+        const comp=ev.competitions&&ev.competitions[0];
+        if(!comp)return;
+        const away=comp.competitors.find(c=>c.homeAway==='away');
+        const home=comp.competitors.find(c=>c.homeAway==='home');
+        const st=comp.status||{};const tp=st.type||{};
+        const odds=comp.odds&&comp.odds[0];
+        liveData.push({sport:s.key,sportName:s.name,id:ev.id,name:ev.shortName||ev.name,date:ev.date,
+          statusName:tp.name||'',statusDesc:tp.shortDetail||tp.description||'',
+          completed:tp.completed||false,inProgress:tp.name==='STATUS_IN_PROGRESS',
+          clock:st.displayClock||'',period:st.period||0,
+          away:{name:away?.team?.displayName||'TBD',abbr:away?.team?.abbreviation||'',logo:away?.team?.logo||'',score:away?.score||'0',winner:away?.winner||false,record:away?.records?.[0]?.summary||''},
+          home:{name:home?.team?.displayName||'TBD',abbr:home?.team?.abbreviation||'',logo:home?.team?.logo||'',score:home?.score||'0',winner:home?.winner||false,record:home?.records?.[0]?.summary||''},
+          odds:odds?{details:odds.details||'',overUnder:odds.overUnder||'',spread:odds.spread||0}:null
+        });
+      });
+    }catch(e){console.error('ESPN '+s.name,e);}
   }
-  document.getElementById('no-odds-msg').classList.add('hidden');
-  document.getElementById('games-today').textContent=new Set(rows.filter(r=>r.isToday).map(r=>r.event)).size;
-  rows.forEach(row=>{
-    const tr=document.createElement('tr');
-    const marketLabel=row.market==='h2h'?'Moneyline':row.market==='spreads'?'Spread':'Total';
-    function fmt(bkData){
-      if(!bkData)return '-';
-      if(row.market==='totals')return Object.values(bkData).join(' / ');
-      return (bkData.away||'-')+' / '+(bkData.home||'-');
+  document.getElementById('live-loading').classList.add('hidden');
+  renderLive();
+}
+function renderLive(){
+  const sf=document.getElementById('live-sport-filter').value;
+  let games=liveData;
+  if(sf!=='all')games=games.filter(g=>g.sport===sf);
+  const container=document.getElementById('live-games');container.innerHTML='';
+  if(!games.length){document.getElementById('no-live').classList.remove('hidden');return;}
+  document.getElementById('no-live').classList.add('hidden');
+  games.sort((a,b)=>{const ao=a.inProgress?0:a.completed?2:1;const bo=b.inProgress?0:b.completed?2:1;return ao-bo;});
+  games.forEach(g=>{
+    const card=document.createElement('div');card.className='promo-card';card.style.padding='16px';
+    const statusColor=g.inProgress?'var(--green)':g.completed?'var(--dim)':'var(--yellow)';
+    const statusDot=g.inProgress?'<span style="display:inline-block;width:8px;height:8px;border-radius:50%;background:var(--green);margin-right:6px;animation:pulse 1.5s infinite"></span>':'';
+    let periodLabel='';
+    if(g.inProgress){
+      if(g.sport==='nhl')periodLabel=['','1st','2nd','3rd','OT'][g.period]||'P'+g.period;
+      else if(g.sport==='nba')periodLabel=['','1st','2nd','3rd','4th','OT'][g.period]||'OT';
+      else if(g.sport==='mlb')periodLabel=g.period;
+      else if(g.sport==='nfl')periodLabel=['','1st','2nd','3rd','4th','OT'][g.period]||'OT';
     }
-    const vals={fanduel:fmt(row.fanduel),draftkings:fmt(row.draftkings),betmgm:fmt(row.betmgm),caesars:fmt(row.caesars)};
-    // Find best line (highest positive number for ML favorite, simplistic)
-    let bestBook='',bestVal=-9999;
-    Object.entries(vals).forEach(([bk,v])=>{
-      if(v==='-')return;
-      const nums=v.match(/[+-]?\d+/g);
-      if(nums){const n=parseInt(nums[0]);if(n>bestVal){bestVal=n;bestBook=bk;}}
-    });
-    tr.innerHTML='<td><span class="sport-badge '+row.sport.split('_').pop()+'">'+row.sport.split('_').pop().toUpperCase()+'</span></td>'
-      +'<td>'+row.event+'</td><td>'+marketLabel+'</td>'
-      +Object.entries(vals).map(([bk,v])=>'<td'+(bk===bestBook?' class="best-line"':'')+'>'+v+'</td>').join('')
-      +'<td class="best-line">'+(bestBook?(BN[bestBook]||bestBook):'-')+'</td>';
-    tb.appendChild(tr);
+    let oddsHtml='';
+    if(g.odds)oddsHtml='<div style="margin-top:10px;padding-top:10px;border-top:1px solid var(--border);font-size:11px;color:var(--dim)">Line: '+g.odds.details+(g.odds.overUnder?' | O/U: '+g.odds.overUnder:'')+'</div>';
+    card.innerHTML='<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px"><span class="sport-badge '+g.sport+'">'+g.sportName+'</span><span style="font-size:11px;color:'+statusColor+'">'+statusDot+(g.inProgress?(g.clock&&g.clock!=='0:00'?g.clock+' '+periodLabel:periodLabel||'Live'):g.statusDesc)+'</span></div><div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:8px"><div style="display:flex;align-items:center;gap:8px">'+(g.away.logo?'<img src="'+g.away.logo+'" width="24" height="24" style="border-radius:4px">':'')+'<div><div style="font-weight:600;font-size:14px'+(g.away.winner?';color:var(--green)':'')+'">'+g.away.abbr+'</div><div style="font-size:10px;color:var(--dim)">'+g.away.record+'</div></div></div><span style="font-size:22px;font-weight:700'+(g.away.winner?';color:var(--green)':'')+'">'+g.away.score+'</span></div><div style="display:flex;align-items:center;justify-content:space-between"><div style="display:flex;align-items:center;gap:8px">'+(g.home.logo?'<img src="'+g.home.logo+'" width="24" height="24" style="border-radius:4px">':'')+'<div><div style="font-weight:600;font-size:14px'+(g.home.winner?';color:var(--green)':'')+'">'+g.home.abbr+'</div><div style="font-size:10px;color:var(--dim)">'+g.home.record+'</div></div></div><span style="font-size:22px;font-weight:700'+(g.home.winner?';color:var(--green)':'')+'">'+g.home.score+'</span></div>'+oddsHtml;
+    container.appendChild(card);
   });
 }
-document.getElementById('sport-filter').addEventListener('change',renderLines);
-document.getElementById('market-filter').addEventListener('change',renderLines);
-document.getElementById('refresh-odds').addEventListener('click',fetchAllOdds); document.getElementById('game-filter').addEventListener('change',renderLines); document.getElementById('time-filter').addEventListener('change',renderLines); document.getElementById('search-filter').addEventListener('input',renderLines);
+document.getElementById('refresh-live').addEventListener('click',fetchESPN);
+document.getElementById('live-sport-filter').addEventListener('change',renderLive);
+
 // Dashboard
 function renderDashboard(){
   const deps=state.transactions.filter(t=>t.type==='deposit').reduce((s,t)=>s+t.amount,0);
@@ -327,6 +529,7 @@ function renderRecent(){
   });
   if(!state.transactions.length)tb.innerHTML='<tr><td colspan="4" style="color:var(--dim);text-align:center">No transactions yet</td></tr>';
 }
+
 // Promos
 function renderPromos(){
   const sp=document.getElementById('promo-sport-filter').value;
@@ -340,6 +543,7 @@ function renderPromos(){
 }
 document.getElementById('promo-sport-filter').addEventListener('change',renderPromos);
 document.getElementById('promo-book-filter').addEventListener('change',renderPromos);
+
 // Accounts
 function renderAccounts(){
   const g=document.getElementById('accounts-grid');g.innerHTML='';
@@ -367,9 +571,10 @@ document.getElementById('add-account-form').addEventListener('submit',e=>{
   document.getElementById('add-account-modal').classList.add('hidden');
   e.target.reset();save();renderAll();
 });
+
 // Transactions
 function renderTransactions(){
-  const tb=document.querySelector('#all-transactions tbody');tb.innerHTML='';
+  const tb=document.getElementById('all-transactions');tb.innerHTML='';
   state.transactions.slice().reverse().forEach((t,i)=>{
     const idx=state.transactions.length-1-i;
     const tr=document.createElement('tr');
@@ -389,7 +594,8 @@ document.getElementById('add-txn-btn').addEventListener('click',()=>{
   if(!state.accounts.find(a=>a.sportsbook===bk))state.accounts.push({sportsbook:bk,nickname:''});
   document.getElementById('txn-amount').value='';save();renderAll();
 });
-// CSV Import
+
+// CSV
 let csvData=[];
 document.getElementById('parse-csv').addEventListener('click',()=>{
   const file=document.getElementById('csv-file').files[0];
@@ -417,6 +623,7 @@ document.getElementById('confirm-import').addEventListener('click',()=>{
   document.getElementById('csv-file').value='';
   save();renderAll();alert('Imported '+count+' transactions.');
 });
+
 // Settings
 document.getElementById('api-key-input').value=apiKey;
 document.getElementById('save-api-key').addEventListener('click',()=>{
@@ -444,24 +651,75 @@ document.getElementById('test-api-key').addEventListener('click',async()=>{
     document.getElementById('api-test-result').style.color='var(--red)';
   }
 });
-// Render All
-function renderAll(){renderDashboard();renderLines();renderPromos();renderAccounts();renderTransactions();renderBets();}
-renderAll();
-// Auto-fetch odds on load if API key exists and data is stale (>1 hour)
-if(apiKey){
-  const lastFetch=state.oddsLastFetched?new Date(state.oddsLastFetched):null;
-  const now=new Date();
-  const stale=!lastFetch||(now-lastFetch)>3600000;
-  if(stale){
-    fetchAllOdds();
-  }else{
-    document.getElementById('api-dot').className='status-dot online';
-    document.getElementById('api-status').textContent='Live Odds (cached)';
-    document.getElementById('last-refresh').textContent='Last updated: '+lastFetch.toLocaleTimeString();
-  }
-}else{
-  document.getElementById('api-status').textContent='No API Key - Go to Settings';
+
+// Bet Tracker
+function calcPL(odds,stake,result){
+  if(result==='pending'||result==='void')return 0;
+  if(result==='push')return 0;
+  const o=parseInt(odds);
+  const profit=o>0?(stake*o/100):(stake*100/Math.abs(o));
+  if(result==='win')return profit;
+  return -stake;
 }
-// Auto-refresh every 30 minutes
-setInterval(()=>{if(apiKey)fetchAllOdds();},1800000);
-function calcPL(odds,stake,result){if(result==='pending'||result==='void')return 0;if(result==='push')return 0;const o=parseInt(odds);const profit=o>0?(stake*o/100):(stake*100/Math.abs(o));if(result==='win')return profit;return -stake;}function renderBets(){const bets=state.bets||[];const tb=document.querySelector('#bets-table tbody');tb.innerHTML='';let totalStaked=0,totalPL=0,wins=0,settled=0;bets.slice().reverse().forEach((b,i)=>{const idx=bets.length-1-i;const pl=calcPL(b.odds,b.stake,b.result);totalStaked+=b.stake;totalPL+=pl;if(b.result==='win')wins++;if(b.result!=='pending')settled++;const tr=document.createElement('tr');tr.innerHTML='<td>'+b.date+'</td><td>'+b.sport.toUpperCase()+'</td><td>'+b.event+'</td><td>'+(BN[b.book]||b.book)+'</td><td>'+b.pick+'</td><td>'+b.odds+'</td><td>$'+b.stake.toFixed(2)+'</td><td style="color:'+(b.result==='win'?'var(--green)':b.result==='loss'?'var(--red)':'var(--dim)')+'">'+b.result+'</td><td style="color:'+(pl>=0?'var(--green)':'var(--red)')+'">$'+pl.toFixed(2)+'</td><td><button class="btn btn-sm btn-secondary" onclick="delBet('+idx+')">X</button></td>';tb.appendChild(tr);});document.getElementById('total-bets').textContent=bets.length;document.getElementById('win-rate').textContent=settled?Math.round(wins/settled*100)+'%':'0%';document.getElementById('total-staked').textContent='$'+totalStaked.toFixed(2);document.getElementById('net-pl').textContent='$'+totalPL.toFixed(2);document.getElementById('net-pl').style.color=totalPL>=0?'var(--green)':'var(--red)';}function delBet(i){state.bets.splice(i,1);save();renderBets();}document.getElementById('bet-date').value=new Date().toISOString().slice(0,10);document.getElementById('add-bet-btn').addEventListener('click',()=>{const b={date:document.getElementById('bet-date').value,sport:document.getElementById('bet-sport').value,event:document.getElementById('bet-event').value,book:document.getElementById('bet-book').value,type:document.getElementById('bet-type').value,pick:document.getElementById('bet-pick').value,odds:document.getElementById('bet-odds').value,stake:parseFloat(document.getElementById('bet-stake').value)||0,result:document.getElementById('bet-result').value};if(!b.stake||!b.event||!b.pick)return alert('Fill in event, pick and stake');state.bets.push(b);document.getElementById('bet-event').value='';document.getElementById('bet-pick').value='';document.getElementById('bet-stake').value='';save();renderBets();});function toDecimal(american){const o=parseInt(american);return o>0?(o/100+1):(100/Math.abs(o)+1);}document.getElementById('calc-arb').addEventListener('click',()=>{const o1=document.getElementById('arb-odds1').value;const o2=document.getElementById('arb-odds2').value;const total=parseFloat(document.getElementById('arb-total').value)||100;if(!o1||!o2)return alert('Enter both odds');const d1=toDecimal(o1);const d2=toDecimal(o2);const margin=1/d1+1/d2;const div=document.getElementById('arb-result');if(margin<1){const s1=total*(1/d1)/margin;const s2=total*(1/d2)/margin;const payout1=s1*d1;const profit=payout1-total;div.innerHTML='<div style="background:rgba(0,212,170,.1);border:1px solid var(--green);border-radius:12px;padding:20px"><h4 style="color:var(--green);margin-bottom:12px">Arbitrage Found!</h4><div style="display:grid;grid-template-columns:1fr 1fr;gap:12px"><div><strong>Bet 1:</strong> $'+s1.toFixed(2)+' at '+o1+'</div><div><strong>Bet 2:</strong> $'+s2.toFixed(2)+' at '+o2+'</div><div><strong>Guaranteed Profit:</strong> <span style="color:var(--green)">$'+profit.toFixed(2)+'</span></div><div><strong>ROI:</strong> <span style="color:var(--green)">'+(profit/total*100).toFixed(2)+'%</span></div></div></div>';}else{const vig=(margin-1)*100;div.innerHTML='<div style="background:rgba(255,71,87,.1);border:1px solid var(--red);border-radius:12px;padding:20px"><h4 style="color:var(--red);margin-bottom:8px">No Arbitrage</h4><p>Combined margin: '+margin.toFixed(4)+' ('+vig.toFixed(2)+'% vig)</p></div>';}});const ESPN_SPORTS=[{key:'nhl',path:'hockey/nhl',name:'NHL'},{key:'nba',path:'basketball/nba',name:'NBA'},{key:'mlb',path:'baseball/mlb',name:'MLB'},{key:'nfl',path:'football/nfl',name:'NFL'}];let liveData=[];async function fetchESPN(){document.getElementById('live-loading').classList.remove('hidden');document.getElementById('no-live').classList.add('hidden');liveData=[];for(const s of ESPN_SPORTS){try{const r=await fetch('https://site.api.espn.com/apis/site/v2/sports/'+s.path+'/scoreboard');if(!r.ok)continue;const d=await r.json();(d.events||[]).forEach(ev=>{const comp=ev.competitions&&ev.competitions[0];if(!comp)return;const away=comp.competitors.find(c=>c.homeAway==='away');const home=comp.competitors.find(c=>c.homeAway==='home');const st=comp.status||{};const tp=st.type||{};const odds=comp.odds&&comp.odds[0];liveData.push({sport:s.key,sportName:s.name,id:ev.id,name:ev.shortName||ev.name,date:ev.date,statusName:tp.name||'',statusDesc:tp.shortDetail||tp.description||st.type?.detail||'',statusDetail:st.type?.detail||'',clock:st.displayClock||'',period:st.period||0,completed:tp.completed||false,inProgress:tp.name==='STATUS_IN_PROGRESS',away:{name:away?.team?.displayName||'TBD',abbr:away?.team?.abbreviation||'',logo:away?.team?.logo||'',score:away?.score||'0',winner:away?.winner||false,record:away?.records?.[0]?.summary||''},home:{name:home?.team?.displayName||'TBD',abbr:home?.team?.abbreviation||'',logo:home?.team?.logo||'',score:home?.score||'0',winner:home?.winner||false,record:home?.records?.[0]?.summary||''},odds:odds?{details:odds.details||'',overUnder:odds.overUnder||'',spread:odds.spread||0}:null});});}catch(e){console.error('ESPN '+s.name,e);}}document.getElementById('live-loading').classList.add('hidden');renderLive();}function renderLive(){const sf=document.getElementById('live-sport-filter').value;let games=liveData;if(sf!=='all')games=games.filter(g=>g.sport===sf);const container=document.getElementById('live-games');container.innerHTML='';if(!games.length){document.getElementById('no-live').classList.remove('hidden');return;}document.getElementById('no-live').classList.add('hidden');games.sort((a,b)=>{const ao=a.inProgress?0:a.completed?2:1;const bo=b.inProgress?0:b.completed?2:1;return ao-bo;});games.forEach(g=>{const card=document.createElement('div');card.className='promo-card';card.style.padding='16px';const statusColor=g.inProgress?'var(--green)':g.completed?'var(--dim)':'var(--yellow)';const statusDot=g.inProgress?'<span style="display:inline-block;width:8px;height:8px;border-radius:50%;background:var(--green);margin-right:6px;animation:pulse 1.5s infinite"></span>':'';let periodLabel='';if(g.inProgress){if(g.sport==='nhl')periodLabel=['','1st','2nd','3rd','OT'][g.period]||'P'+g.period;else if(g.sport==='nba')periodLabel=['','1st','2nd','3rd','4th','OT'][g.period]||'OT';else if(g.sport==='mlb')periodLabel=(g.period<=9?'':'')+g.period;else if(g.sport==='nfl')periodLabel=['','1st','2nd','3rd','4th','OT'][g.period]||'OT';}let oddsHtml='';if(g.odds){oddsHtml='<div style="margin-top:10px;padding-top:10px;border-top:1px solid var(--border);font-size:11px;color:var(--dim)">Line: '+g.odds.details+(g.odds.overUnder?' | O/U: '+g.odds.overUnder:'')+'</div>';}card.innerHTML='<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px"><span class="sport-badge '+g.sport+'">'+g.sportName+'</span><span style="font-size:11px;color:'+statusColor+'">'+statusDot+(g.inProgress?(g.clock&&g.clock!=='0:00'?g.clock+' '+periodLabel:periodLabel||'Live'):g.statusDesc||g.statusDetail)+'</span></div><div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:8px"><div style="display:flex;align-items:center;gap:8px">'+(g.away.logo?'<img src="'+g.away.logo+'" width="24" height="24" style="border-radius:4px">':'')+'<div><div style="font-weight:600;font-size:14px'+(g.away.winner?';color:var(--green)':'')+'">'+g.away.abbr+'</div><div style="font-size:10px;color:var(--dim)">'+g.away.record+'</div></div></div><span style="font-size:22px;font-weight:700'+(g.away.winner?';color:var(--green)':'')+'">'+g.away.score+'</span></div><div style="display:flex;align-items:center;justify-content:space-between"><div style="display:flex;align-items:center;gap:8px">'+(g.home.logo?'<img src="'+g.home.logo+'" width="24" height="24" style="border-radius:4px">':'')+'<div><div style="font-weight:600;font-size:14px'+(g.home.winner?';color:var(--green)':'')+'">'+g.home.abbr+'</div><div style="font-size:10px;color:var(--dim)">'+g.home.record+'</div></div></div><span style="font-size:22px;font-weight:700'+(g.home.winner?';color:var(--green)':'')+'">'+g.home.score+'</span></div>'+oddsHtml;container.appendChild(card);});}document.getElementById('refresh-live').addEventListener('click',fetchESPN);document.getElementById('live-sport-filter').addEventListener('change',renderLive);fetchESPN();setInterval(fetchESPN,30000);</script></body></html>
+function renderBets(){
+  const bets=state.bets||[];
+  const tb=document.querySelector('#bets-table tbody');tb.innerHTML='';
+  let totalStaked=0,totalPL=0,wins=0,settled=0;
+  bets.slice().reverse().forEach((b,i)=>{
+    const idx=bets.length-1-i;
+    const pl=calcPL(b.odds,b.stake,b.result);
+    totalStaked+=b.stake;totalPL+=pl;
+    if(b.result==='win')wins++;
+    if(b.result!=='pending')settled++;
+    const tr=document.createElement('tr');
+    tr.innerHTML='<td>'+b.date+'</td><td>'+b.sport.toUpperCase()+'</td><td>'+b.event+'</td><td>'+(BN[b.book]||b.book)+'</td><td>'+b.pick+'</td><td>'+b.odds+'</td><td>$'+b.stake.toFixed(2)+'</td><td style="color:'+(b.result==='win'?'var(--green)':b.result==='loss'?'var(--red)':'var(--dim)')+'">'+b.result+'</td><td style="color:'+(pl>=0?'var(--green)':'var(--red)')+'">$'+pl.toFixed(2)+'</td><td><button class="btn btn-sm btn-secondary" onclick="delBet('+idx+')">X</button></td>';
+    tb.appendChild(tr);
+  });
+  document.getElementById('total-bets').textContent=bets.length;
+  document.getElementById('win-rate').textContent=settled?Math.round(wins/settled*100)+'%':'0%';
+  document.getElementById('total-staked').textContent='$'+totalStaked.toFixed(2);
+  document.getElementById('net-pl').textContent='$'+totalPL.toFixed(2);
+  document.getElementById('net-pl').style.color=totalPL>=0?'var(--green)':'var(--red)';
+}
+function delBet(i){state.bets.splice(i,1);save();renderBets();}
+document.getElementById('bet-date').value=new Date().toISOString().slice(0,10);
+document.getElementById('add-bet-btn').addEventListener('click',()=>{
+  const b={date:document.getElementById('bet-date').value,sport:document.getElementById('bet-sport').value,event:document.getElementById('bet-event').value,book:document.getElementById('bet-book').value,type:document.getElementById('bet-type').value,pick:document.getElementById('bet-pick').value,odds:document.getElementById('bet-odds').value,stake:parseFloat(document.getElementById('bet-stake').value)||0,result:document.getElementById('bet-result').value};
+  if(!b.stake||!b.event||!b.pick)return alert('Fill in event, pick and stake');
+  state.bets.push(b);
+  document.getElementById('bet-event').value='';document.getElementById('bet-pick').value='';document.getElementById('bet-stake').value='';
+  save();renderBets();
+});
+
+// Arb Calculator
+function toDecimal(american){const o=parseInt(american);return o>0?(o/100+1):(100/Math.abs(o)+1);}
+document.getElementById('calc-arb').addEventListener('click',()=>{
+  const o1=document.getElementById('arb-odds1').value;
+  const o2=document.getElementById('arb-odds2').value;
+  const total=parseFloat(document.getElementById('arb-total').value)||100;
+  if(!o1||!o2)return alert('Enter both odds');
+  const d1=toDecimal(o1);const d2=toDecimal(o2);
+  const margin=1/d1+1/d2;
+  const div=document.getElementById('arb-result');
+  if(margin<1){
+    const s1=total*(1/d1)/margin;const s2=total*(1/d2)/margin;
+    const payout1=s1*d1;const profit=payout1-total;
+    div.innerHTML='<div style="background:rgba(0,212,170,.1);border:1px solid var(--green);border-radius:12px;padding:20px"><h4 style="color:var(--green);margin-bottom:12px">Arbitrage Found!</h4><div style="display:grid;grid-template-columns:1fr 1fr;gap:12px"><div><strong>Bet 1:</strong> $'+s1.toFixed(2)+' at '+o1+'</div><div><strong>Bet 2:</strong> $'+s2.toFixed(2)+' at '+o2+'</div><div><strong>Guaranteed Profit:</strong> <span style="color:var(--green)">$'+profit.toFixed(2)+'</span></div><div><strong>ROI:</strong> <span style="color:var(--green)">'+(profit/total*100).toFixed(2)+'%</span></div></div></div>';
+  }else{
+    const vig=(margin-1)*100;
+    div.innerHTML='<div style="background:rgba(255,71,87,.1);border:1px solid var(--red);border-radius:12px;padding:20px"><h4 style="color:var(--red);margin-bottom:8px">No Arbitrage</h4><p>Combined margin: '+margin.toFixed(4)+' ('+vig.toFixed(2)+'% vig)</p></div>';
+  }
+});
+
+// Render All
+function renderAll(){renderDashboard();renderPromos();renderAccounts();renderTransactions();renderBets();}
+renderAll();
+
+// Init: fetch ESPN data for both Live Games and Line Comparison
+fetchESPN();
+fetchLines();
+setInterval(fetchESPN,30000);
+setInterval(fetchLines,60000);
+</script>
+</body>
+</html>
