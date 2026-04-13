@@ -115,7 +115,7 @@ select,.btn{padding:8px 16px;border-radius:8px;font-size:13px;border:1px solid v
 <div class="filters">
 <select id="sport-filter"><option value="all">All Sports</option><option value="icehockey_nhl">NHL</option><option value="baseball_mlb">MLB</option><option value="basketball_nba">NBA</option><option value="americanfootball_nfl">NFL</option></select>
 <select id="market-filter"><option value="all">All Markets</option><option value="h2h">Moneyline</option><option value="spreads">Spread</option><option value="totals">Totals</option></select>
-<button id="refresh-odds" class="btn">Refresh Odds</button>
+<button id="refresh-odds" class="btn">Refresh Odds</button><select id="game-filter"><option value="all">All Games</option></select><select id="time-filter"><option value="all">Today & Tomorrow</option><option value="today">Today Only</option><option value="tomorrow">Tomorrow Only</option></select><input type="text" id="search-filter" placeholder="Search team..." style="padding:8px 16px;border-radius:8px;font-size:13px;border:1px solid var(--border);background:var(--card);color:var(--text);width:180px">
 </div>
 <div id="lines-loading" class="loading hidden">Loading live odds...</div>
 <table id="lines-table" class="data-table"><thead><tr><th>Sport</th><th>Event</th><th>Market</th><th>FanDuel</th><th>DraftKings</th><th>BetMGM</th><th>Caesars</th><th>Best</th></tr></thead><tbody></tbody></table>
@@ -259,7 +259,7 @@ function renderLines(){
   });
   let rows=Object.values(grouped);
   if(sp!=='all')rows=rows.filter(r=>r.sportKey===sp);
-  if(mk!=='all')rows=rows.filter(r=>r.market===mk);
+  if(mk!=='all')rows=rows.filter(r=>r.market===mk);const gf=document.getElementById('game-filter').value;const tf=document.getElementById('time-filter').value;const sf=document.getElementById('search-filter').value.toLowerCase();if(gf!=='all')rows=rows.filter(r=>r.event===gf);if(tf==='today')rows=rows.filter(r=>r.isToday);if(tf==='tomorrow')rows=rows.filter(r=>!r.isToday);if(sf)rows=rows.filter(r=>r.event.toLowerCase().includes(sf));const gameSelect=document.getElementById('game-filter');const curG=gameSelect.value;const allEv=[...new Set(Object.values(grouped).filter(r=>(sp==='all'||r.sportKey===sp)).map(r=>r.event))];gameSelect.innerHTML='<option value="all">All Games ('+allEv.length+')</option>';allEv.sort().forEach(e=>{const o=document.createElement('option');o.value=e;o.textContent=e;if(e===curG)o.selected=true;gameSelect.appendChild(o);});
   rows.sort((a,b)=>(a.sport+a.event).localeCompare(b.sport+b.event));
   if(!rows.length){
     document.getElementById('no-odds-msg').classList.remove('hidden');
@@ -292,7 +292,7 @@ function renderLines(){
 }
 document.getElementById('sport-filter').addEventListener('change',renderLines);
 document.getElementById('market-filter').addEventListener('change',renderLines);
-document.getElementById('refresh-odds').addEventListener('click',fetchAllOdds);
+document.getElementById('refresh-odds').addEventListener('click',fetchAllOdds); document.getElementById('game-filter').addEventListener('change',renderLines); document.getElementById('time-filter').addEventListener('change',renderLines); document.getElementById('search-filter').addEventListener('input',renderLines);
 // Dashboard
 function renderDashboard(){
   const deps=state.transactions.filter(t=>t.type==='deposit').reduce((s,t)=>s+t.amount,0);
