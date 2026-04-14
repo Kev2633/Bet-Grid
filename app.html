@@ -231,6 +231,7 @@ let bets=JSON.parse(localStorage.getItem('eb_bets')||'[]');     let promos=[
 {book:'BetRivers',sport:'All',desc:'PropPacks - curated prop bet bundles with boosted odds',exp:'2026-04-30'},
 {book:'BetRivers',sport:'All',desc:'Rush Rewards & Bonus Store - earn points, redeem for bonus bets & boosts',exp:'2026-12-31'},
 {book:'BetRivers',sport:'All',desc:'Happy Hour Multipliers - earn extra loyalty points during happy hours',exp:'2026-04-30'}
+    let liveData=[];let linesData=[];
 ];
 function getApiKey(){return localStorage.getItem('eb_odds_api_key')||'';}
 function saveApiKey(){
@@ -293,7 +294,7 @@ const c=ev.competitions&&ev.competitions[0];if(!c)return;
 const away=c.competitors.find(x=>x.homeAway==='away');
 const home=c.competitors.find(x=>x.homeAway==='home');
 const tp=c.status?.type||{};
-if(tp.state!=='in')return;
+if(tp.state==='post')return;
 liveData.push({sport:s.name,away,home,status:tp.shortDetail||'Live',comp:c});
 });
 }catch(e){console.log(e);}}
