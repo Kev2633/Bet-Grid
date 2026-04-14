@@ -5,11 +5,11 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>EdgeBoard - Sports Betting Dashboard</title>
 <style>
-:root{--bg:#0f1117;--bg2:#1a1d28;--card:#222639;--accent:#00d4aa;--ah:#00f0c0;--text:#e8e8e8;--dim:#8890a0;--green:#00d4aa;--red:#ff4757;--border:#2a2e3e}
+:root{--bg:#0f1117;--bg2:#1a1d28;--card:#222639;--accent:#00d4aa;--ah:#00f0c0;--text:#e8e8e8;--dim:#8890a0;--green:#00d4aa;--red:#ff4757;--border:#2a2e3e;--side:220px}
 *{margin:0;padding:0;box-sizing:border-box}
 body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;background:var(--bg);color:var(--text);min-height:100vh}
 #app{display:flex;min-height:100vh}
-.sidebar{width:var(--side);background:var(--bg2);border-right:1px solid var(--border);padding:16px 8px;display:flex;flex-direction:column;gap:4px}
+.sidebar{width:var(--side);background:var(--bg2);border-right:1px solid var(--border);padding:16px 8px;display:flex;flex-direction:column;gap:4px;flex-shrink:0}
 .logo{padding:0 20px 24px;border-bottom:1px solid var(--border)}
 .logo h1{font-size:22px;color:var(--accent);font-weight:700}
 .tagline{font-size:11px;color:var(--dim);text-transform:uppercase;letter-spacing:1.5px}
@@ -17,6 +17,9 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;b
 .nav-links li{padding:12px 20px;cursor:pointer;color:var(--dim);font-size:14px;transition:all .2s;border-radius:8px;margin:2px 0}
 .nav-links li:hover{background:var(--card);color:var(--text)}
 .nav-links li.active{background:var(--accent);color:#000;font-weight:600}
+.mobile-nav{display:none;background:var(--bg2);padding:8px;overflow-x:auto;white-space:nowrap;border-bottom:1px solid var(--border)}
+.mobile-nav button{background:var(--card);color:var(--dim);border:1px solid var(--border);padding:8px 16px;border-radius:8px;font-size:13px;margin-right:6px;cursor:pointer;white-space:nowrap}
+.mobile-nav button.active{background:var(--accent);color:#000;font-weight:600;border-color:var(--accent)}
 .main{flex:1;padding:24px;overflow-y:auto}
 .tab-content{display:none}
 .tab-content.active{display:block}
@@ -61,12 +64,12 @@ td{font-size:14px}
 .form-group input,.form-group select,.form-group textarea{width:100%;background:var(--bg2);border:1px solid var(--border);color:var(--text);padding:10px;border-radius:8px;font-size:14px}
 .form-row{display:grid;grid-template-columns:1fr 1fr;gap:16px}
 .toast{position:fixed;bottom:24px;right:24px;background:var(--green);color:#000;padding:12px 24px;border-radius:8px;font-weight:600;z-index:999;display:none}
-@media(max-width:768px){.sidebar{display:none}.main{padding:12px}}
+@media(max-width:768px){.sidebar{display:none}.mobile-nav{display:flex}.main{padding:12px}}
 </style>
 </head>
 <body>
 <div id="app">
-<nav class="sidebar">
+<aside class="sidebar">
 <div class="logo"><h1>EdgeBoard</h1><div class="tagline">Betting Dashboard</div></div>
 <ul class="nav-links">
 <li class="active" data-tab="dashboard">Dashboard</li>
@@ -77,33 +80,43 @@ td{font-size:14px}
 <li data-tab="transactions">Transactions</li>
 <li data-tab="import">Import CSV</li>
 <li data-tab="settings">Settings</li>
-<li data-tab="bettracker">Bet Tracker</li>
+<li data-tab="bets">Bet Tracker</li>
 <li data-tab="arb">Arb Calc</li>
 </ul>
-</nav>
+</aside>
 <div class="main">
-<div class="status-bar">
-<div><span class="status-dot green" id="status-dot"></span><span id="status-text">ESPN Live Data</span></div>
-<div id="last-update" style="color:var(--dim);font-size:13px">Connecting...</div>
+<div class="mobile-nav" id="mobile-nav">
+<button class="active" data-tab="dashboard">Dashboard</button>
+<button data-tab="live">Live</button>
+<button data-tab="lines">Lines</button>
+<button data-tab="promos">Promos</button>
+<button data-tab="accounts">Accounts</button>
+<button data-tab="transactions">Trans</button>
+<button data-tab="import">Import</button>
+<button data-tab="settings">Settings</button>
+<button data-tab="bets">Bets</button>
+<button data-tab="arb">Arb</button>
 </div>
-<!-- Dashboard Tab -->
+<div class="status-bar"><div><span class="status-dot green" id="status-dot"></span><span id="status-text">ESPN Live Data</span></div><span id="last-update">Connecting...</span></div>
 <div id="tab-dashboard" class="tab-content active">
-<h2>Dashboard</h2>
+<h2>Dashboard Overview</h2>
 <div class="grid">
-<div class="card"><h3>Total Deposited</h3><div class="big-num" id="total-deposited">$0.00</div></div>
-<div class="card"><h3>Active Accounts</h3><div class="big-num" id="active-accounts">0</div></div>
-<div class="card"><h3>Today's Games</h3><div class="big-num" id="todays-games">-</div></div>
-<div class="card"><h3>Data Source</h3><div class="big-num" style="font-size:18px" id="data-source">ESPN Live</div></div>
+<div class="card"><h3>Total Deposited</h3><div class="big-num" id="total-deposited" style="color:var(--accent)">$0.00</div></div>
+<div class="card"><h3>Total Withdrawn</h3><div class="big-num" id="total-withdrawn" style="color:var(--accent)">$0.00</div></div>
+<div class="card"><h3>Active Accounts</h3><div class="big-num" id="active-accounts" style="color:var(--accent)">0</div></div>
+<div class="card"><h3>Net Bankroll</h3><div class="big-num" id="net-bankroll" style="color:var(--accent)">$0.00</div></div>
+<div class="card"><h3>Games Today</h3><div class="big-num" id="todays-games" style="color:var(--accent)">-</div></div>
+<div class="card"><h3>Active Promos</h3><div class="big-num" id="active-promos" style="color:var(--accent)">-</div></div>
 </div>
+<h2>Deposits by Sportsbook</h2>
+<div id="deposits-chart" class="card"><p style="color:var(--dim)">Add accounts to see breakdown</p></div>
 </div>
-<!-- Live Games Tab -->
 <div id="tab-live" class="tab-content">
 <h2>Live Games</h2>
-<div id="live-loading" class="hidden" style="color:var(--dim)">Loading live data...</div>
-<div id="no-live" class="hidden" style="color:var(--dim)">No live games right now.</div>
+<p id="live-loading">Loading live data...</p>
+<p id="no-live" class="hidden">No live games right now.</p>
 <div id="live-container"></div>
 </div>
-<!-- Line Comparison Tab -->
 <div id="tab-lines" class="tab-content">
 <h2>Line Comparison</h2>
 <div class="filter-bar">
@@ -112,52 +125,42 @@ td{font-size:14px}
 <button class="btn" id="refresh-lines">Refresh Lines</button>
 <input type="text" id="team-search" placeholder="Search team...">
 </div>
-<div id="lines-loading" class="hidden" style="color:var(--dim)">Loading odds...</div>
-<div id="no-lines-msg" class="hidden" style="color:var(--dim)">No games with odds found.</div>
+<p id="lines-loading">Loading odds...</p>
+<p id="no-lines-msg" class="hidden">No games with odds found.</p>
 <div id="lines-container"></div>
 </div>
-<!-- Promotions Tab -->
 <div id="tab-promos" class="tab-content">
 <h2>Promotions</h2>
-<div class="grid" id="promos-container"></div>
+<div id="promos-container" class="grid"></div>
 </div>
-<!-- Accounts Tab -->
 <div id="tab-accounts" class="tab-content">
 <h2>Sportsbook Accounts</h2>
 <button class="btn" onclick="showAddAccount()" style="margin-bottom:16px">+ Add Account</button>
 <div id="add-account-form" class="hidden card" style="margin-bottom:16px">
-<div class="form-row">
 <div class="form-group"><label>Sportsbook</label><select id="acct-book"><option>DraftKings</option><option>FanDuel</option><option>BetMGM</option><option>Caesars</option><option>ESPN BET</option><option>Other</option></select></div>
 <div class="form-group"><label>Deposited Amount</label><input type="number" id="acct-deposit" placeholder="0.00"></div>
-</div>
 <button class="btn" onclick="saveAccount()">Save Account</button>
 </div>
 <table><thead><tr><th>Sportsbook</th><th>Deposited</th><th>Status</th><th>Action</th></tr></thead><tbody id="accounts-body"></tbody></table>
 </div>
-<!-- Transactions Tab -->
 <div id="tab-transactions" class="tab-content">
 <h2>Transactions</h2>
 <table><thead><tr><th>Date</th><th>Book</th><th>Type</th><th>Amount</th></tr></thead><tbody id="transactions-body"></tbody></table>
 </div>
-<!-- Import CSV Tab -->
 <div id="tab-import" class="tab-content">
 <h2>Import CSV</h2>
-<div class="card"><p style="color:var(--dim);margin-bottom:12px">Import transaction history from your sportsbooks.</p>
+<p style="color:var(--dim);margin-bottom:12px">Import transaction history from your sportsbooks.</p>
 <input type="file" id="csv-file" accept=".csv" style="margin-bottom:12px"><br>
 <button class="btn" onclick="importCSV()">Import</button>
-</div></div>
-<!-- Settings Tab -->
+</div>
 <div id="tab-settings" class="tab-content">
 <h2>Settings</h2>
-<div class="card">
 <div class="form-group"><label>Default Odds Format</label><select id="odds-format"><option>American</option><option>Decimal</option><option>Fractional</option></select></div>
 <div class="form-group"><label>Auto-Refresh Interval</label><select><option>30 seconds</option><option>1 minute</option><option>5 minutes</option></select></div>
 <button class="btn" onclick="showToast('Settings saved!')">Save Settings</button>
-</div></div>
-<!-- Bet Tracker Tab -->
-<div id="tab-bettracker" class="tab-content">
+</div>
+<div id="tab-bets" class="tab-content">
 <h2>Bet Tracker</h2>
-<div class="card" style="margin-bottom:16px">
 <div class="form-row">
 <div class="form-group"><label>Sportsbook</label><select id="bt-book"><option>DraftKings</option><option>FanDuel</option><option>BetMGM</option><option>Caesars</option><option>ESPN BET</option></select></div>
 <div class="form-group"><label>Bet Amount</label><input type="number" id="bt-amount" placeholder="0.00"></div>
@@ -167,13 +170,10 @@ td{font-size:14px}
 <div class="form-group"><label>Pick</label><input type="text" id="bt-pick" placeholder="Team / Over / Under"></div>
 </div>
 <button class="btn" onclick="saveBet()">Log Bet</button>
-</div>
 <table><thead><tr><th>Date</th><th>Book</th><th>Pick</th><th>Odds</th><th>Amount</th><th>Result</th></tr></thead><tbody id="bets-body"></tbody></table>
 </div>
-<!-- Arb Calculator Tab -->
 <div id="tab-arb" class="tab-content">
 <h2>Arbitrage Calculator</h2>
-<div class="card">
 <div class="form-row">
 <div class="form-group"><label>Total Stake ($)</label><input type="number" id="arb-total" placeholder="100"></div>
 <div class="form-group"><label>Odds Format</label><select id="arb-format"><option>American</option><option>Decimal</option></select></div>
@@ -184,10 +184,10 @@ td{font-size:14px}
 </div>
 <button class="btn" onclick="calcArb()">Calculate</button>
 <div id="arb-result" style="margin-top:16px"></div>
-</div></div>
-</div><!-- end main -->
-</div><!-- end app -->
-<div class="toast" id="toast"></div>
+</div>
+</div>
+</div>
+<div id="toast" class="toast"></div>
 <script>
 const ESPN_SPORTS=[{name:'NHL',path:'hockey/nhl'},{name:'MLB',path:'baseball/mlb'},{name:'NBA',path:'basketball/nba'}];
 let accounts=JSON.parse(localStorage.getItem('eb_accounts')||'[]');
@@ -200,14 +200,25 @@ let promos=[
 {book:'Caesars',sport:'NHL',desc:'$1000 First Bet on Caesars',exp:'2026-04-30'},
 {book:'ESPN BET',sport:'All',desc:'$500 2nd Chance Bet',exp:'2026-05-15'}
 ];
-let liveData=[];let linesData=[];
+let liveData=[],linesData=[];
 function showToast(m){const t=document.getElementById('toast');t.textContent=m;t.style.display='block';setTimeout(()=>t.style.display='none',2500);}
 function showAddAccount(){document.getElementById('add-account-form').classList.toggle('hidden');}
 function saveAccount(){const b=document.getElementById('acct-book').value;const d=parseFloat(document.getElementById('acct-deposit').value)||0;accounts.push({book:b,deposit:d,status:'Active'});localStorage.setItem('eb_accounts',JSON.stringify(accounts));transactions.push({date:new Date().toLocaleDateString(),book:b,type:'Deposit',amount:d});localStorage.setItem('eb_transactions',JSON.stringify(transactions));renderAll();showToast('Account added!');document.getElementById('add-account-form').classList.add('hidden');}
 function removeAccount(i){transactions.push({date:new Date().toLocaleDateString(),book:accounts[i].book,type:'Withdrawal',amount:-accounts[i].deposit});accounts.splice(i,1);localStorage.setItem('eb_accounts',JSON.stringify(accounts));localStorage.setItem('eb_transactions',JSON.stringify(transactions));renderAll();showToast('Account removed');}
 function saveBet(){const b=document.getElementById('bt-book').value;const a=parseFloat(document.getElementById('bt-amount').value)||0;const o=document.getElementById('bt-odds').value;const p=document.getElementById('bt-pick').value;bets.push({date:new Date().toLocaleDateString(),book:b,amount:a,odds:o,pick:p,result:'Pending'});localStorage.setItem('eb_bets',JSON.stringify(bets));renderAll();showToast('Bet logged!');}
 function importCSV(){const f=document.getElementById('csv-file').files[0];if(!f)return showToast('Select a file first');const r=new FileReader();r.onload=function(e){const lines=e.target.result.split('\n');let count=0;lines.slice(1).forEach(l=>{const p=l.split(',');if(p.length>=4){transactions.push({date:p[0]?.trim(),book:p[1]?.trim(),type:p[2]?.trim(),amount:parseFloat(p[3])||0});count++;}});localStorage.setItem('eb_transactions',JSON.stringify(transactions));renderAll();showToast(count+' transactions imported!');};r.readAsText(f);}
-function renderDashboard(){const td=accounts.reduce((s,a)=>s+a.deposit,0);document.getElementById('total-deposited').textContent='$'+td.toFixed(2);document.getElementById('active-accounts').textContent=accounts.length;document.getElementById('todays-games').textContent=liveData.length||linesData.length||'-';}
+function renderDashboard(){
+const td=accounts.reduce((s,a)=>s+a.deposit,0);
+document.getElementById('total-deposited').textContent='$'+td.toFixed(2);
+document.getElementById('active-accounts').textContent=accounts.length;
+document.getElementById('todays-games').textContent=liveData.length||linesData.length||'-';
+document.getElementById('active-promos').textContent=promos.length;
+const tw=transactions.filter(t=>t.type==='Withdrawal').reduce((s,t)=>s+Math.abs(t.amount),0);
+document.getElementById('total-withdrawn').textContent='$'+tw.toFixed(2);
+document.getElementById('net-bankroll').textContent='$'+(td-tw).toFixed(2);
+const chart=document.getElementById('deposits-chart');
+if(accounts.length>0){let html='';accounts.forEach(a=>{const pct=td>0?(a.deposit/td*100):0;html+='<div style="display:flex;align-items:center;gap:12px;margin-bottom:8px"><span style="min-width:100px">'+a.book+'</span><div style="flex:1;background:var(--bg);border-radius:4px;height:24px"><div style="width:'+pct+'%;background:var(--accent);height:100%;border-radius:4px"></div></div><span>$'+a.deposit.toFixed(2)+'</span></div>';});chart.innerHTML=html;}else{chart.innerHTML='<p style="color:var(--dim)">Add accounts to see breakdown</p>';}
+}
 function renderPromos(){const c=document.getElementById('promos-container');c.innerHTML='';promos.forEach(p=>{c.innerHTML+='<div class="card"><h3>'+p.book+' - '+p.sport+'</h3><p style="font-size:18px;font-weight:600;margin:8px 0">'+p.desc+'</p><p style="color:var(--dim);font-size:13px">Expires: '+p.exp+'</p></div>';});}
 function renderAccounts(){const b=document.getElementById('accounts-body');b.innerHTML='';accounts.forEach((a,i)=>{b.innerHTML+='<tr><td>'+a.book+'</td><td>$'+a.deposit.toFixed(2)+'</td><td style="color:var(--green)">'+a.status+'</td><td><button onclick="removeAccount('+i+')" style="background:var(--red);color:#fff;border:none;padding:4px 12px;border-radius:4px;cursor:pointer">Remove</button></td></tr>';});}
 function renderTransactions(){const b=document.getElementById('transactions-body');b.innerHTML='';transactions.slice().reverse().forEach(t=>{b.innerHTML+='<tr><td>'+t.date+'</td><td>'+t.book+'</td><td>'+t.type+'</td><td style="color:'+(t.amount>=0?'var(--green)':'var(--red)')+'">$'+Math.abs(t.amount).toFixed(2)+'</td></tr>';});}
@@ -218,15 +229,28 @@ document.getElementById('sport-filter').addEventListener('change',renderLines);
 document.getElementById('status-filter').addEventListener('change',renderLines);
 document.getElementById('team-search').addEventListener('input',renderLines);
 document.getElementById('refresh-lines').addEventListener('click',fetchLines);
-// Tab navigation
+// Tab navigation - sidebar
 document.querySelectorAll('.nav-links li').forEach(li=>{
 li.addEventListener('click',()=>{
 document.querySelectorAll('.nav-links li').forEach(l=>l.classList.remove('active'));
 document.querySelectorAll('.tab-content').forEach(t=>t.classList.remove('active'));
+document.querySelectorAll('.mobile-nav button').forEach(b=>b.classList.remove('active'));
 li.classList.add('active');
 document.getElementById('tab-'+li.dataset.tab).classList.add('active');
-});
-});
+const mb=document.querySelector('.mobile-nav button[data-tab="'+li.dataset.tab+'"]');
+if(mb)mb.classList.add('active');
+});});
+// Tab navigation - mobile
+document.querySelectorAll('.mobile-nav button').forEach(btn=>{
+btn.addEventListener('click',()=>{
+document.querySelectorAll('.mobile-nav button').forEach(b=>b.classList.remove('active'));
+document.querySelectorAll('.tab-content').forEach(t=>t.classList.remove('active'));
+document.querySelectorAll('.nav-links li').forEach(l=>l.classList.remove('active'));
+btn.classList.add('active');
+document.getElementById('tab-'+btn.dataset.tab).classList.add('active');
+const sl=document.querySelector('.nav-links li[data-tab="'+btn.dataset.tab+'"]');
+if(sl)sl.classList.add('active');
+});});
 // Live Games
 async function fetchESPN(){
 document.getElementById('live-loading').classList.remove('hidden');
@@ -248,8 +272,7 @@ const tp=st.type||{};
 if(tp.state!=='in')return;
 liveData.push({sport:s.name,away:away,home:home,status:tp.shortDetail||tp.detail||'Live',comp:comp});
 });
-}catch(e){console.log(e);}
-}
+}catch(e){console.log(e);}}
 document.getElementById('live-loading').classList.add('hidden');
 if(liveData.length===0){document.getElementById('no-live').classList.remove('hidden');}
 renderLive();
@@ -264,7 +287,7 @@ const homeRec=g.home.records?g.home.records[0]?.summary:'';
 c.innerHTML+='<div class="game-card"><div class="game-header"><span class="sport-badge">'+g.sport+'</span><span class="game-status live">'+g.status+'</span></div><div class="game-teams"><div class="team-row"><img src="'+g.away.team.logo+'" onerror="this.style.display=\'none\'"><strong>'+g.away.team.abbreviation+'</strong><span class="record">'+awayRec+'</span><span class="score">'+g.away.score+'</span></div><div class="team-row"><img src="'+g.home.team.logo+'" onerror="this.style.display=\'none\'"><strong>'+g.home.team.abbreviation+'</strong><span class="record">'+homeRec+'</span><span class="score">'+g.home.score+'</span></div></div></div>';
 });
 }
-// Line Comparison - FIXED moneyline parsing
+// Line Comparison
 async function fetchLines(){
 document.getElementById('lines-loading').classList.remove('hidden');
 document.getElementById('no-lines-msg').classList.add('hidden');
@@ -289,24 +312,16 @@ if(po){
 overUnder=po.overUnder||'';
 spread=po.spread||'';
 provider=po.provider?po.provider.name:'';
-// FIXED: Use moneyline object for ML odds
 if(po.moneyline){
 if(po.moneyline.home&&po.moneyline.home.close)homeML=po.moneyline.home.close.odds||'';
 if(po.moneyline.away&&po.moneyline.away.close)awayML=po.moneyline.away.close.odds||'';
 }
-// Fallback: parse details field for spread display
-const det=po.details||'';
-if(det&&!homeML){
-const parts=det.split(' ');
-if(parts.length>=2){
-spread=det;
-}
-}
+if(po.homeTeamOdds&&po.homeTeamOdds.moneyLine&&!homeML)homeML=po.homeTeamOdds.moneyLine;
+if(po.awayTeamOdds&&po.awayTeamOdds.moneyLine&&!awayML)awayML=po.awayTeamOdds.moneyLine;
 }
 linesData.push({sport:s.name,away:away,home:home,state:tp.state||'pre',statusText:tp.shortDetail||tp.detail||'',awayML:awayML,homeML:homeML,spread:po?po.details||'':'',overUnder:overUnder,provider:provider,awayScore:away?away.score:'',homeScore:home?home.score:''});
 });
-}catch(e){console.log(e);}
-}
+}catch(e){console.log(e);}}
 document.getElementById('lines-loading').classList.add('hidden');
 if(linesData.length===0)document.getElementById('no-lines-msg').classList.remove('hidden');
 renderLines();
@@ -343,22 +358,17 @@ const awayLogo=g.away?.team?.logo||'';
 const homeLogo=g.home?.team?.logo||'';
 const spreadDisplay=g.spread||'-';
 const ouDisplay=g.overUnder||'-';
-const awayMLdisplay=g.awayML||'-';
-const homeMLdisplay=g.homeML||'-';
-const awayMLclass=awayMLdisplay.toString().startsWith('-')?'negative':(awayMLdisplay.toString().startsWith('+')?'positive':'');
-const homeMLclass=homeMLdisplay.toString().startsWith('-')?'negative':(homeMLdisplay.toString().startsWith('+')?'positive':'');
-let scoreHTML='';
-if(isLive){scoreHTML='<span class="score">'+g.awayScore+'</span>';}
-let scoreHTML2='';
-if(isLive){scoreHTML2='<span class="score">'+g.homeScore+'</span>';}
-c.innerHTML+='<div class="game-card"><div class="game-header"><span class="sport-badge">'+g.sport+'</span><span class="'+statusClass+'">'+statusTime+'</span></div><div class="game-teams"><div class="team-row"><img src="'+awayLogo+'" onerror="this.style.display=\'none\'"><strong>'+awayAbbr+'</strong><span class="record">'+awayRec+'</span>'+scoreHTML+'</div><div class="team-row"><img src="'+homeLogo+'" onerror="this.style.display=\'none\'"><strong>'+homeAbbr+'</strong><span class="record">'+homeRec+'</span>'+scoreHTML2+'</div></div><div class="odds-row"><div class="odds-box"><div class="label">Spread</div><div class="value">'+spreadDisplay+'</div></div><div class="odds-box"><div class="label">Moneyline</div><div class="value '+awayMLclass+'">'+awayMLdisplay+'</div><div class="value '+homeMLclass+'">'+homeMLdisplay+'</div></div><div class="odds-box"><div class="label">O/U</div><div class="value">'+ouDisplay+'</div></div></div>'+(g.provider?'<div class="provider-tag">via '+g.provider+'</div>':'')+'</div>';
+const awayMLd=g.awayML||'-';
+const homeMLd=g.homeML||'-';
+const awayMLc=String(awayMLd).startsWith('-')?'negative':(String(awayMLd).startsWith('+')?'positive':'');
+const homeMLc=String(homeMLd).startsWith('-')?'negative':(String(homeMLd).startsWith('+')?'positive':'');
+let sH='';if(isLive){sH='<span class="score">'+g.awayScore+'</span>';}
+let sH2='';if(isLive){sH2='<span class="score">'+g.homeScore+'</span>';}
+c.innerHTML+='<div class="game-card"><div class="game-header"><span class="sport-badge">'+g.sport+'</span><span class="'+statusClass+'">'+statusTime+'</span></div><div class="game-teams"><div class="team-row"><img src="'+awayLogo+'" onerror="this.style.display=\'none\'"><strong>'+awayAbbr+'</strong><span class="record">'+awayRec+'</span>'+sH+'</div><div class="team-row"><img src="'+homeLogo+'" onerror="this.style.display=\'none\'"><strong>'+homeAbbr+'</strong><span class="record">'+homeRec+'</span>'+sH2+'</div></div><div class="odds-row"><div class="odds-box"><div class="label">Spread</div><div class="value">'+spreadDisplay+'</div></div><div class="odds-box"><div class="label">Moneyline</div><div class="value '+awayMLc+'">'+awayMLd+'</div><div class="value '+homeMLc+'">'+homeMLd+'</div></div><div class="odds-box"><div class="label">O/U</div><div class="value">'+ouDisplay+'</div></div></div>'+(g.provider?'<div class="provider-tag">via '+g.provider+'</div>':'')+'</div>';
 });
 }
-// Render All
 function renderAll(){renderDashboard();renderPromos();renderAccounts();renderTransactions();renderBets();}
 renderAll();
-
-// Init: fetch ESPN data for both Live Games and Line Comparison
 fetchESPN();
 fetchLines();
 setInterval(fetchESPN,30000);
