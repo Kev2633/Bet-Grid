@@ -124,7 +124,7 @@ td{font-size:14px}
 <input type="text" id="team-search" placeholder="Search team...">
 </div>
 <p id="lines-loading" class="hidden">Loading odds from 5 sportsbooks...</p>
-<p id="no-lines-msg" class="hidden">No odds data. Enter your Odds API key in Settings to get live lines from DraftKings, FanDuel, BetMGM, Caesars & ESPN BET.</p>
+<p id="no-lines-msg" class="hidden">No odds data. Enter your Odds API key in Settings to get live lines from DraftKings, FanDuel, BetMGM, BetRivers & ESPN BET.</p>
 <div id="lines-container"></div>
 </div>
 <div id="tab-promos" class="tab-content">
@@ -135,7 +135,7 @@ td{font-size:14px}
 <h2>Sportsbook Accounts</h2>
 <button class="btn" onclick="showAddAccount()" style="margin-bottom:16px">+ Add Account</button>
 <div id="add-account-form" class="hidden card" style="margin-bottom:16px">
-<div class="form-group"><label>Sportsbook</label><select id="acct-book"><option>DraftKings</option><option>FanDuel</option><option>BetMGM</option><option>Caesars</option><option>ESPN BET</option><option>Other</option></select></div>
+<div class="form-group"><label>Sportsbook</label><select id="acct-book"><option>DraftKings</option><option>FanDuel</option><option>BetMGM</option><option>BetRivers</option><option>ESPN BET</option><option>Other</option></select></div>
 <div class="form-group"><label>Deposited Amount</label><input type="number" id="acct-deposit" placeholder="0.00"></div>
 <button class="btn" onclick="saveAccount()">Save Account</button>
 </div>
@@ -149,7 +149,7 @@ td{font-size:14px}
 <h2>Settings</h2>
 <div class="card" style="margin-bottom:16px">
 <h3>The Odds API Key</h3>
-<p style="color:var(--dim);font-size:13px;margin-bottom:12px">Get a FREE key at <a href="https://the-odds-api.com" target="_blank" style="color:var(--accent)">the-odds-api.com</a> (500 requests/month). This powers live lines from DraftKings, FanDuel, BetMGM, Caesars & ESPN BET.</p>
+<p style="color:var(--dim);font-size:13px;margin-bottom:12px">Get a FREE key at <a href="https://the-odds-api.com" target="_blank" style="color:var(--accent)">the-odds-api.com</a> (500 requests/month). This powers live lines from DraftKings, FanDuel, BetMGM, BetRivers & ESPN BET.</p>
 <div class="form-group"><label>API Key</label><input type="text" id="odds-api-key" placeholder="Paste your Odds API key here..."></div>
 <button class="btn" onclick="saveApiKey()">Save API Key</button>
 <div id="api-key-status" style="margin-top:8px"></div>
@@ -161,7 +161,7 @@ td{font-size:14px}
 <div id="tab-bets" class="tab-content">
 <h2>Bet Tracker</h2>
 <div class="form-row">
-<div class="form-group"><label>Sportsbook</label><select id="bt-book"><option>DraftKings</option><option>FanDuel</option><option>BetMGM</option><option>Caesars</option><option>ESPN BET</option></select></div>
+<div class="form-group"><label>Sportsbook</label><select id="bt-book"><option>DraftKings</option><option>FanDuel</option><option>BetMGM</option><option>BetRivers</option><option>ESPN BET</option></select></div>
 <div class="form-group"><label>Bet Amount</label><input type="number" id="bt-amount" placeholder="0.00"></div>
 </div>
 <div class="form-row">
@@ -187,8 +187,8 @@ td{font-size:14px}
 </div></div>
 <div id="toast" class="toast"></div>
 <script>
-const BOOKS=['draftkings','fanduel','betmgm','caesars_sportsbook','espnbet'];
-const BOOK_NAMES={draftkings:'DraftKings',fanduel:'FanDuel',betmgm:'BetMGM',caesars_sportsbook:'Caesars',espnbet:'ESPN BET'};
+const BOOKS=['draftkings','fanduel','betmgm','betrivers','espnbet'];
+const BOOK_NAMES={draftkings:'DraftKings',fanduel:'FanDuel',betmgm:'BetMGM',betrivers:'BetRivers',espnbet:'ESPN BET'};
 const ODDS_SPORTS=[{key:'icehockey_nhl',name:'NHL'},{key:'baseball_mlb',name:'MLB'},{key:'basketball_nba',name:'NBA'},{key:'americanfootball_nfl',name:'NFL'},{key:'mma_mixed_martial_arts',name:'UFC'}];
 const ESPN_SPORTS=[{name:'NHL',path:'hockey/nhl'},{name:'MLB',path:'baseball/mlb'},{name:'NBA',path:'basketball/nba'}];
 let accounts=JSON.parse(localStorage.getItem('eb_accounts')||'[]');
@@ -198,7 +198,7 @@ let promos=[
 {book:'DraftKings',sport:'NHL',desc:'Bet $5 Get $200 in Bonus Bets',exp:'2026-04-30'},
 {book:'FanDuel',sport:'MLB',desc:'No Sweat First Bet up to $1000',exp:'2026-04-30'},
 {book:'BetMGM',sport:'NBA',desc:'First Bet up to $1500',exp:'2026-05-01'},
-{book:'Caesars',sport:'NHL',desc:'$1000 First Bet on Caesars',exp:'2026-04-30'},
+{book:'BetRivers',sport:'NHL',desc:'$1000 First Bet on BetRivers',exp:'2026-04-30'},
 {book:'ESPN BET',sport:'All',desc:'$500 2nd Chance Bet',exp:'2026-05-15'}
 ];
 let liveData=[],linesData=[];
@@ -340,7 +340,7 @@ if(hm&&hm.price>bestHomeML)bestHomeML=hm.price;
 });
 });
 // Render each book
-const bookOrder=['draftkings','fanduel','betmgm','caesars_sportsbook','espnbet'];
+const bookOrder=['draftkings','fanduel','betmgm','betrivers','espnbet'];
 bookOrder.forEach(bKey=>{
 const bk=g.bookmakers.find(b=>b.key===bKey);
 const name=BOOK_NAMES[bKey]||bKey;
