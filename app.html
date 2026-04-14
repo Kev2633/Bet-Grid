@@ -373,18 +373,17 @@ c.innerHTML+=html;
 });
 }
 // Filters
-document.getElementById('sport-filter').addEventListener('change',()=>{fetchLines();});
+document.getElementById('sport-filter').addEventListener('change',renderLines);
 document.getElementById('team-search').addEventListener('input',renderLines);
 document.getElementById('refresh-lines').addEventListener('click',fetchLines);
 // Init
-function renderAll(){renderDashboard();renderPromos();renderAccounts();renderTransactions();renderBets();}
+// fetchLines only on button click
 const savedKey=getApiKey();
 if(savedKey)document.getElementById('odds-api-key').value=savedKey;
 renderAll();
 fetchESPN();
-fetchLines();
 setInterval(fetchESPN,30000);
-setInterval(fetchLines,120000);
+
 </script>
 </body>
 </html>
