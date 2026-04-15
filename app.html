@@ -687,5 +687,8 @@ section.innerHTML=`
 dash.insertBefore(section,dash.firstChild);
 })();
 </script>
+    <script>
+(function(){var slip=document.getElementById('parlay-slip');if(!slip)return;slip.style.display='none';document.addEventListener('click',function(e){var t=e.target;if(t.closest&&t.closest('.lines-table td,.odds-cell,.line-cell')){slip.style.display='block';}});var obs=new MutationObserver(function(){var h=slip.querySelector('[class*=header],[class*=title]');if(h&&h.textContent.indexOf('0 legs')>-1){slip.style.display='none';}});obs.observe(slip,{childList:true,subtree:true,characterData:true});var origClear=slip.querySelector('button');if(origClear){origClear.addEventListener('click',function(){setTimeout(function(){var h=slip.querySelector('[class*=header],[class*=title]');if(h&&h.textContent.indexOf('0 legs')>-1){slip.style.display='none';}},200);});}})();
+</script>
 </body>
 </html>
