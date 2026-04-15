@@ -300,7 +300,7 @@ document.getElementById('live-loading').classList.remove('hidden');
 document.getElementById('no-live').classList.add('hidden');
 document.getElementById('live-container').innerHTML='';
 liveData=[];
-const today=new Date().toISOString().slice(0,10).replace(/-/g,''); await Promise.all(ESPN_SPORTS.map(async(s)=>{ try{ const r=await fetch('https://site.api.espn.com/apis/site/v2/sports/'+s.path+'/scoreboard?dates='+today); if(!r.ok)return;const d=await r.json(); (d.events||[]).forEach(ev=>{ const c=ev.competitions&&ev.competitions[0];if(!c)return; const away=c.competitors.find(x=>x.homeAway==='away'); const home=c.competitors.find(x=>x.homeAway==='home'); const tp=c.status?.type||{}; if(tp.state==='post')return; liveData.push({sport:s.name,away,home,status:tp.shortDetail||'Live',comp:c}); }); }catch(e){console.log(e);} }));
+const today=new Date().toISOString().slice(0,10).replace(/-/g,''); await Promise.all(ESPN_SPORTS.map(async(s)=>{ try{ const r=await fetch('https://site.api.espn.com/apis/site/v2/sports/'+s.path+'/scoreboard?dates='+today,{signal:AbortSignal.timeout(8000)}); if(!r.ok)return;const d=await r.json(); (d.events||[]).forEach(ev=>{ const c=ev.competitions&&ev.competitions[0];if(!c)return; const away=c.competitors.find(x=>x.homeAway==='away'); const home=c.competitors.find(x=>x.homeAway==='home'); const tp=c.status?.type||{}; if(tp.state==='post')return; liveData.push({sport:s.name,away,home,status:tp.shortDetail||'Live',comp:c}); }); }catch(e){console.log(e);} }));
 document.getElementById('live-loading').classList.add('hidden');
 if(!liveData.length)document.getElementById('no-live').classList.remove('hidden');
 renderLive();
