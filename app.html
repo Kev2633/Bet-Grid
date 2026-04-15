@@ -300,19 +300,7 @@ document.getElementById('live-loading').classList.remove('hidden');
 document.getElementById('no-live').classList.add('hidden');
 document.getElementById('live-container').innerHTML='';
 liveData=[];
-for(const s of ESPN_SPORTS){
-try{
-const r=await fetch('https://site.api.espn.com/apis/site/v2/sports/'+s.path+'/scoreboard?dates='+new Date().toISOString().slice(0,10).replace(/-/g,''));
-if(!r.ok)continue;const d=await r.json();
-(d.events||[]).forEach(ev=>{
-const c=ev.competitions&&ev.competitions[0];if(!c)return;
-const away=c.competitors.find(x=>x.homeAway==='away');
-const home=c.competitors.find(x=>x.homeAway==='home');
-const tp=c.status?.type||{};
-if(tp.state==='post')return;
-liveData.push({sport:s.name,away,home,status:tp.shortDetail||'Live',comp:c});
-});
-}catch(e){console.log(e);}}
+const today=new Date().toISOString().slice(0,10).replace(/-/g,''); await Promise.all(ESPN_SPORTS.map(async(s)=>{ try{ const r=await fetch('https://site.api.espn.com/apis/site/v2/sports/'+s.path+'/scoreboard?dates='+today); if(!r.ok)return;const d=await r.json(); (d.events||[]).forEach(ev=>{ const c=ev.competitions&&ev.competitions[0];if(!c)return; const away=c.competitors.find(x=>x.homeAway==='away'); const home=c.competitors.find(x=>x.homeAway==='home'); const tp=c.status?.type||{}; if(tp.state==='post')return; liveData.push({sport:s.name,away,home,status:tp.shortDetail||'Live',comp:c}); }); }catch(e){console.log(e);} }));
 document.getElementById('live-loading').classList.add('hidden');
 if(!liveData.length)document.getElementById('no-live').classList.remove('hidden');
 renderLive();
@@ -360,18 +348,7 @@ document.getElementById('lines-container').innerHTML='';
 linesData=[];
 const sf=document.getElementById('sport-filter').value;
 const sports=sf==='all'?ODDS_SPORTS:ODDS_SPORTS.filter(s=>s.key===sf);
-for(const s of sports){
-try{
-const url='https://api.the-odds-api.com/v4/sports/'+s.key+'/odds?apiKey='+key+'&regions=us&markets=h2h,spreads,totals&oddsFormat=american&bookmakers='+BOOKS.join(',');
-const r=await fetch(url);
-if(!r.ok)continue;
-const data=await r.json();
-const rem=r.headers.get('x-requests-remaining');
-if(rem)st.innerHTML='<div class="api-status ok">Connected - '+rem+' API requests remaining this month</div>';
-data.forEach(ev=>{
-linesData.push({sport:s.name,sportKey:s.key,id:ev.id,home:ev.home_team,away:ev.away_team,start:ev.commence_time,bookmakers:ev.bookmakers||[]});
-});
-}catch(e){console.log(e);}}
+await Promise.all(sports.map(async(s)=>{ try{ const url='https://api.the-odds-api.com/v4/sports/'+s.key+'/odds?apiKey='+key+'&regions=us&markets=h2h,spreads,totals&oddsFormat=american&bookmakers='+BOOKS.join(','); const r=await fetch(url); if(!r.ok)return; const data=await r.json(); const rem=r.headers.get('x-requests-remaining'); if(rem)st.innerHTML='<div class="api-status ok">Connected - '+rem+' API requests remaining this month</div>'; data.forEach(ev=>{ linesData.push({sport:s.name,sportKey:s.key,id:ev.id,home:ev.home_team,away:ev.away_team,start:ev.commence_time,bookmakers:ev.bookmakers||[]}); }); }catch(e){console.log(e);} }));
 document.getElementById('lines-loading').classList.add('hidden');
 if(!linesData.length)document.getElementById('no-lines-msg').classList.remove('hidden');
 renderLines();renderLive();renderMockGames();
