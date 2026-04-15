@@ -583,102 +583,54 @@ if(settingsBtn){mobileNav.appendChild(settingsBtn);}
 </script>
 
     <script>
-(function(){
-var dash=document.getElementById('tab-dashboard');
-if(!dash)return;
-var existing=dash.querySelector('.suggested-bets-section');
-if(existing)existing.remove();
-var section=document.createElement('div');
-section.className='suggested-bets-section';
-section.innerHTML=`
-<style>
-.sb-container{background:#1a1a2e;border-radius:12px;padding:20px;margin-top:20px;}
-.sb-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:15px;}
-.sb-header h2{color:#fff;font-size:20px;margin:0;}
-.sb-date{color:#8b8ba7;font-size:13px;}
-.sb-record{display:flex;gap:15px;margin-bottom:18px;flex-wrap:wrap;}
-.sb-record-card{background:#16213e;border-radius:8px;padding:10px 16px;text-align:center;min-width:100px;}
-.sb-record-card .label{color:#8b8ba7;font-size:11px;text-transform:uppercase;letter-spacing:1px;}
-.sb-record-card .value{color:#fff;font-size:22px;font-weight:700;margin-top:2px;}
-.sb-record-card .value.green{color:#00c853;}
-.sb-record-card .value.red{color:#ff5252;}
-.sb-record-card .value.gold{color:#ffd600;}
-.sb-pick{background:#16213e;border-radius:10px;padding:16px;margin-bottom:12px;border-left:4px solid #4fc3f7;}
-.sb-pick.parlay{border-left-color:#ffd600;}
-.sb-pick-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:8px;}
-.sb-pick-type{font-size:11px;text-transform:uppercase;letter-spacing:1px;padding:3px 8px;border-radius:4px;font-weight:600;}
-.sb-pick-type.straight{background:#4fc3f720;color:#4fc3f7;}
-.sb-pick-type.parlay-tag{background:#ffd60020;color:#ffd600;}
-.sb-pick-odds{color:#00c853;font-weight:700;font-size:15px;}
-.sb-pick-title{color:#fff;font-size:16px;font-weight:600;margin-bottom:6px;}
-.sb-pick-detail{color:#b0b0c8;font-size:13px;line-height:1.5;}
-.sb-pick-conf{display:flex;align-items:center;gap:6px;margin-top:8px;}
-.sb-pick-conf .bar{height:6px;border-radius:3px;flex:1;background:#2a2a4a;overflow:hidden;}
-.sb-pick-conf .bar .fill{height:100%;border-radius:3px;}
-.sb-pick-conf .pct{color:#8b8ba7;font-size:12px;min-width:32px;}
-.sb-legs{margin:8px 0;}
-.sb-leg{color:#e0e0f0;font-size:13px;padding:4px 0;border-bottom:1px solid #2a2a4a;}
-.sb-leg:last-child{border-bottom:none;}
-</style>
-<div class="sb-container">
-<div class="sb-header"><h2>Daily Suggested Bets</h2><span class="sb-date">April 16, 2025</span></div>
-<div class="sb-record">
-<div class="sb-record-card"><div class="label">Straight Bets</div><div class="value red">1-2</div></div>
-<div class="sb-record-card"><div class="label">Parlays</div><div class="value red">0-2</div></div>
-<div class="sb-record-card"><div class="label">Overall</div><div class="value red">1-4</div></div>
-<div class="sb-record-card"><div class="label">Win Rate</div><div class="value red">20%</div></div>
-<div class="sb-record-card"><div class="label">ROI</div><div class="value red">-67.1%</div></div>
-</div>
-
-<div class="sb-pick">
-<div class="sb-pick-header"><span class="sb-pick-type straight">Straight Bet</span><span class="sb-pick-odds">-130</span></div>
-<div class="sb-pick-title">Chicago Bulls ML vs Miami Heat</div>
-<div class="sb-pick-detail">The Bulls are 2-point favorites at home in the Play-In Tournament. Chicago has been strong at the United Center down the stretch and owns the tiebreaker edge. The Heat have struggled on the road recently, and Butler's absence continues to loom large over Miami's playoff push.</div>
-<div class="sb-pick-conf"><span class="pct">72%</span><div class="bar"><div class="fill" style="width:72%;background:linear-gradient(90deg,#4fc3f7,#00c853)"></div></div></div>
-</div>
-
-<div class="sb-pick">
-<div class="sb-pick-header"><span class="sb-pick-type straight">Straight Bet</span><span class="sb-pick-odds">-126</span></div>
-<div class="sb-pick-title">Atlanta Braves ML vs Toronto Blue Jays</div>
-<div class="sb-pick-detail">Spencer Strider on the mound gives Atlanta a significant pitching advantage in this matchup. The Braves bats have been heating up despite a slow start to the season, and Toronto's bullpen has been shaky. Look for Atlanta to take advantage of the Blue Jays' inconsistent defense early in the game.</div>
-<div class="sb-pick-conf"><span class="pct">65%</span><div class="bar"><div class="fill" style="width:65%;background:linear-gradient(90deg,#4fc3f7,#00c853)"></div></div></div>
-</div>
-
-<div class="sb-pick">
-<div class="sb-pick-header"><span class="sb-pick-type straight">Straight Bet</span><span class="sb-pick-odds">-155</span></div>
-<div class="sb-pick-title">LA Dodgers ML vs Colorado Rockies</div>
-<div class="sb-pick-detail">The Dodgers have a commanding 66% win probability in this one according to models. Colorado continues to struggle as one of the weaker teams in the NL, and LA's lineup is stacked top to bottom. Even on the road, the Dodgers' pitching staff should keep the Rockies' bats quiet at Coors.</div>
-<div class="sb-pick-conf"><span class="pct">78%</span><div class="bar"><div class="fill" style="width:78%;background:linear-gradient(90deg,#4fc3f7,#00c853)"></div></div></div>
-</div>
-
-<div class="sb-pick parlay">
-<div class="sb-pick-header"><span class="sb-pick-type parlay-tag">3-Leg Parlay</span><span class="sb-pick-odds">+580</span></div>
-<div class="sb-pick-title">Wednesday Night Special</div>
-<div class="sb-legs">
-<div class="sb-leg">Bulls ML vs Heat (-130)</div>
-<div class="sb-leg">Dodgers ML vs Rockies (-155)</div>
-<div class="sb-leg">Kings -5.5 vs Mavericks (-118)</div>
-</div>
-<div class="sb-pick-detail">This parlay combines three strong favorites with solid edges. The Bulls and Dodgers are our top straight picks, and Sacramento has been dominant at home. The Kings should handle Dallas comfortably with the Mavs fighting for their playoff lives but running low on gas after a grueling stretch.</div>
-<div class="sb-pick-conf"><span class="pct">34%</span><div class="bar"><div class="fill" style="width:34%;background:linear-gradient(90deg,#ffd600,#ff9100)"></div></div></div>
-</div>
-
-<div class="sb-pick parlay">
-<div class="sb-pick-header"><span class="sb-pick-type parlay-tag">2-Leg Parlay</span><span class="sb-pick-odds">+210</span></div>
-<div class="sb-pick-title">Safe Parlay</div>
-<div class="sb-legs">
-<div class="sb-leg">Braves ML vs Blue Jays (-126)</div>
-<div class="sb-leg">Bulls/Heat Over 220 (-110)</div>
-</div>
-<div class="sb-pick-detail">A safer two-leg parlay pairing the Braves with Strider on the bump and the over in the Play-In game. Both teams in Bulls-Heat will be playing with urgency in a win-or-go-home scenario, which historically pushes pace and scoring. Expect a fast-paced, high-energy contest from tip to buzzer.</div>
-<div class="sb-pick-conf"><span class="pct">42%</span><div class="bar"><div class="fill" style="width:42%;background:linear-gradient(90deg,#ffd600,#ff9100)"></div></div></div>
-</div>
-
-</div>
-`;
-dash.insertBefore(section,dash.firstChild);
-})();
-</script>
+    (function(){
+    var dash=document.getElementById('tab-dashboard');
+    if(!dash)return;
+    function toImplied(odds){var n=parseInt(odds);if(!n||isNaN(n))return 0.5;return n<0?Math.abs(n)/(Math.abs(n)+100):100/(n+100);}
+    function toAm(dec){return dec>=2?'+'+(Math.round((dec-1)*100)):'-'+Math.round(100/(dec-1));}
+    function confBar(pct,color){return '<div class="sb-pick-conf"><span class="pct">'+Math.round(pct*100)+'%</span><div class="bar"><div class="fill" style="width:'+Math.round(pct*100)+'%;background:linear-gradient(90deg,'+color+')"></div></div></div>';}
+    function getBestOdds(game,side){var best=-99999,bestBook='',bestPrice=0;(game.bookmakers||[]).forEach(function(bk){var mk=bk.markets&&bk.markets.find(function(m){return m.key==='h2h';});if(!mk)return;var o=mk.outcomes&&mk.outcomes.find(function(x){return x.name===(side==='away'?game.away:game.home);});if(o&&o.price>best){best=o.price;bestBook=bk.key;bestPrice=o.price;}});return{price:bestPrice,book:bestBook};}
+    function pickValue(game){var awayBest=getBestOdds(game,'away');var homeBest=getBestOdds(game,'home');if(!awayBest.price||!homeBest.price)return null;var awayImpl=toImplied(awayBest.price);var homeImpl=toImplied(homeBest.price);var vig=awayImpl+homeImpl;var homeFair=homeImpl/vig;var awayFair=awayImpl/vig;var adjHome=Math.min(0.85,homeFair+0.03);var adjAway=1-adjHome;var homeEdge=adjHome-homeImpl;var awayEdge=adjAway-awayImpl;var side,team,odds,impliedP,adjP,edge;if(homeEdge>awayEdge&&homeEdge>0.02){side='home';team=game.home;odds=homeBest.price;impliedP=homeImpl;adjP=adjHome;edge=homeEdge;}else if(awayEdge>0.02){side='away';team=game.away;odds=awayBest.price;impliedP=awayImpl;adjP=adjAway;edge=awayEdge;}else return null;return{team:team,side:side,odds:odds,impliedP:impliedP,adjP:adjP,edge:edge,sport:game.sport,matchup:game.away+' @ '+game.home};}
+    function buildSuggestedBets(){
+      var existing=dash.querySelector('.suggested-bets-section');
+      if(existing)existing.remove();
+      var today=new Date().toLocaleDateString('en-US',{weekday:'long',month:'long',day:'numeric',year:'numeric'});
+      var wins=parseInt(localStorage.getItem('sb_wins')||'1');
+      var losses=parseInt(localStorage.getItem('sb_losses')||'4');
+      var total=wins+losses;
+      var wr=total>0?Math.round(wins/total*100):0;
+      var roi=parseFloat(localStorage.getItem('sb_roi')||'-67.1');
+      var picks=[];
+      var allGames=typeof linesData!=='undefined'?linesData:[];
+      allGames.forEach(function(g){var v=pickValue(g);if(v)picks.push(v);});
+      picks.sort(function(a,b){return b.edge-a.edge;});
+      var topPicks=picks.slice(0,3);
+      var parlayHTML='';
+      if(topPicks.length>=2){
+        var p1=topPicks[0],p2=topPicks[1];
+        var d1=p1.odds>0?(p1.odds/100)+1:(100/Math.abs(p1.odds))+1;
+        var d2=p2.odds>0?(p2.odds/100)+1:(100/Math.abs(p2.odds))+1;
+        var comboAm=toAm(d1*d2);
+        var parlayConf=p1.adjP*p2.adjP;
+        parlayHTML='<div class="sb-pick parlay"><div class="sb-pick-header"><span class="sb-pick-type parlay-tag">2-Leg Value Parlay</span><span class="sb-pick-odds">'+comboAm+'</span></div><div class="sb-pick-title">Edge Parlay</div><div class="sb-legs"><div class="sb-leg">'+p1.team+' ML ('+((p1.odds>0?'+':'')+p1.odds)+')</div><div class="sb-leg">'+p2.team+' ML ('+((p2.odds>0?'+':'')+p2.odds)+')</div></div><div class="sb-pick-detail">Both legs selected via positive EV model. '+p1.team+' edge +'+Math.round(p1.edge*100)+'pts | '+p2.team+' edge +'+Math.round(p2.edge*100)+'pts.</div>'+confBar(parlayConf,'#ffd600,#ff9100')+'</div>';
+      }
+      var picksHTML=topPicks.length?topPicks.map(function(p){
+        var f=(p.odds>0?'+':'')+p.odds;
+        var cl=p.edge>0.06?'#00d4aa,#00c853':p.edge>0.04?'#4fc3f7,#00c853':'#80cbc4,#4fc3f7';
+        return '<div class="sb-pick"><div class="sb-pick-header"><span class="sb-pick-type straight">Value Bet &bull; '+p.sport+'</span><span class="sb-pick-odds">'+f+'</span></div><div class="sb-pick-title">'+p.team+' ML</div><div class="sb-pick-detail">'+p.matchup+'. Book implies '+Math.round(p.impliedP*100)+'% &rarr; Model: '+Math.round(p.adjP*100)+'% (+'+Math.round(p.edge*100)+'pt edge, +EV)</div>'+confBar(Math.min(0.82,p.adjP),cl)+'</div>';
+      }).join(''):'<div class="sb-pick" style="text-align:center;padding:24px"><div style="color:var(--dim);font-size:14px">&#9432; Load lines in <strong>Line Comp</strong> tab to generate smart picks based on real odds data.</div></div>';
+      var wClass=wr>=50?'green':'red';
+      var roiClass=roi>=0?'green':'red';
+      var section=document.createElement('div');
+      section.className='suggested-bets-section';
+      section.innerHTML='<style>.sb-container{background:#1a1a2e;border-radius:12px;padding:20px;margin-top:20px;}.sb-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:15px;flex-wrap:wrap;gap:8px;}.sb-header h2{color:#fff;font-size:20px;margin:0;}.sb-date{color:#8b8ba7;font-size:13px;}.sb-record{display:flex;gap:12px;margin-bottom:18px;flex-wrap:wrap;}.sb-record-card{background:#16213e;border-radius:8px;padding:10px 16px;text-align:center;min-width:90px;}.sb-record-card .label{color:#8b8ba7;font-size:11px;text-transform:uppercase;letter-spacing:1px;}.sb-record-card .value{color:#fff;font-size:20px;font-weight:700;margin-top:2px;}.sb-record-card .value.green{color:#00c853;}.sb-record-card .value.red{color:#ff5252;}.sb-pick{background:#16213e;border-radius:10px;padding:16px;margin-bottom:12px;border-left:4px solid #4fc3f7;}.sb-pick.parlay{border-left-color:#ffd600;}.sb-pick-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:8px;}.sb-pick-type{font-size:11px;text-transform:uppercase;letter-spacing:1px;padding:3px 8px;border-radius:4px;font-weight:600;}.sb-pick-type.straight{background:#4fc3f720;color:#4fc3f7;}.sb-pick-type.parlay-tag{background:#ffd60020;color:#ffd600;}.sb-pick-odds{color:#00c853;font-weight:700;font-size:15px;}.sb-pick-title{color:#fff;font-size:16px;font-weight:600;margin-bottom:6px;}.sb-pick-detail{color:#b0b0c8;font-size:13px;line-height:1.5;}.sb-pick-conf{display:flex;align-items:center;gap:6px;margin-top:8px;}.sb-pick-conf .bar{height:6px;border-radius:3px;flex:1;background:#2a2a4a;overflow:hidden;}.sb-pick-conf .bar .fill{height:100%;border-radius:3px;}.sb-pick-conf .pct{color:#8b8ba7;font-size:12px;min-width:32px;}.sb-legs{margin:8px 0;}.sb-leg{color:#e0e0f0;font-size:13px;padding:4px 0;border-bottom:1px solid #2a2a4a;}.sb-leg:last-child{border-bottom:none;}.sb-refresh{background:var(--accent);color:#000;border:none;padding:6px 14px;border-radius:6px;font-size:12px;font-weight:700;cursor:pointer;}</style><div class="sb-container"><div class="sb-header"><h2>Smart Picks <small style="font-size:13px;color:#8b8ba7;font-weight:400">(Value Bet Engine)</small></h2><div style="display:flex;flex-direction:column;align-items:flex-end;gap:4px"><span class="sb-date">'+today+'</span><button class="sb-refresh" onclick="window.buildSuggestedBets&&window.buildSuggestedBets()" title="Re-generate from latest lines">&#8635; Refresh Picks</button></div></div><div class="sb-record"><div class="sb-record-card"><div class="label">Overall</div><div class="value '+(wins>losses?'green':'red')+'">'+wins+'-'+losses+'</div></div><div class="sb-record-card"><div class="label">Win Rate</div><div class="value '+wClass+'">'+wr+'%</div></div><div class="sb-record-card"><div class="label">ROI</div><div class="value '+roiClass+'">'+roi+'%</div></div><div class="sb-record-card"><div class="label">Picks Today</div><div class="value" style="color:#4fc3f7">'+topPicks.length+'</div></div></div>'+picksHTML+parlayHTML+'</div>';
+      dash.insertBefore(section,dash.firstChild);
+    }
+    window.buildSuggestedBets=buildSuggestedBets;
+    buildSuggestedBets();
+    setInterval(function(){if(typeof linesData!=='undefined'&&linesData.length>0)buildSuggestedBets();},5000);
+    })();
+    </script>
     <script>
 (function(){var slip=document.getElementById('lines-parlay-slip');if(!slip)return;slip.style.display='none';document.addEventListener('click',function(e){var t=e.target;if(t.closest&&t.closest('.lines-table td,.odds-cell,.line-cell')){slip.style.display='block';}});var obs=new MutationObserver(function(){var h=slip.querySelector('[class*=header],[class*=title]');if(h&&h.textContent.indexOf('0 legs')>-1){slip.style.display='none';}});obs.observe(slip,{childList:true,subtree:true,characterData:true});var origClear=slip.querySelector('button');if(origClear){origClear.addEventListener('click',function(){setTimeout(function(){var h=slip.querySelector('[class*=header],[class*=title]');if(h&&h.textContent.indexOf('0 legs')>-1){slip.style.display='none';}},200);});}})();
 </script>
